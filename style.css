@@ -17,14 +17,14 @@ input, textarea, select { user-select: text; -webkit-user-select: text; }
 
 /* ===== STICKY MOBILE HEADER ===== */
 .page-header-mobile {
-  background: rgba(254, 250, 224, 0.95);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
 
 /* ===== BOTTOM NAV ===== */
 .bottom-nav {
-  background: rgba(250, 237, 205, 0.97);
+  background: rgba(248, 249, 250, 0.97);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
@@ -487,7 +487,7 @@ select.input-field option { background: var(--bg2); }
 }
 
 .mobile-auth-bar {
-  background: rgba(254,250,224,0.95);
+  background: rgba(255,255,255,0.95);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
