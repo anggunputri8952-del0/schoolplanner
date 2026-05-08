@@ -1,0 +1,20 @@
+{
+  "enabled": true,
+  "name": "Auto Git Push",
+  "description": "Setiap kali file project diedit, otomatis commit dan push ke GitHub",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "*.html",
+      "*.css",
+      "*.js",
+      "*.gs",
+      "*.py"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "File project telah diedit. Jalankan perintah berikut di direktori workspace (C:\\Users\\LOQ\\OneDrive\\Documents\\tugas (1)) menggunakan executePwsh:\n1. git add .\n2. git commit -m \"auto: update [nama file yang berubah]\"\n3. git push\n\nGunakan separator titik koma (;) bukan &&. Jika push gagal karena auth, cukup lakukan commit saja dan informasikan ke user."
+  }
+}
