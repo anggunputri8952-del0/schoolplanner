@@ -53,7 +53,7 @@ input, textarea, select { user-select: text; -webkit-user-select: text; }
   transition: all 0.18s ease; text-align: left;
 }
 .nav-item:hover { background: var(--bg3); color: var(--text); transform: translateX(2px); }
-.nav-item.active { background: var(--primary); color: #fff; }
+.nav-item.active { background: var(--primary); color: #3a3a3a; border: 1px solid var(--border); }
 .nav-item.active:hover { transform: none; }
 
 .nav-item-mobile {
@@ -65,7 +65,7 @@ input, textarea, select { user-select: text; -webkit-user-select: text; }
   min-width: 60px;
 }
 .nav-item-mobile:hover { color: var(--text2); transform: translateY(-2px); }
-.nav-item-mobile.active { color: var(--primary); }
+.nav-item-mobile.active { color: #7a8c5a; }
 .nav-item-mobile.active span:first-child { transform: scale(1.15); display: inline-block; }
 
 /* ===== BUTTONS ===== */
@@ -82,7 +82,7 @@ input, textarea, select { user-select: text; -webkit-user-select: text; }
 .btn-primary-sm {
   display: inline-flex; align-items: center; gap: 4px;
   padding: 7px 14px; border-radius: 8px;
-  background: var(--primary); color: #fff; border: none;
+  background: var(--primary); color: #3a3a3a; border: 1px solid var(--border);
   font-size: 13px; font-weight: 600; cursor: pointer;
   transition: all 0.18s ease;
 }
