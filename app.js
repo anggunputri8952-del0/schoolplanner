@@ -708,7 +708,6 @@ function initSheets() {
 }
 
 function updateConnectionUI(connected) {
-  // Update both mobile and desktop badges
   ['connectionBadge', 'connectionBadgeDesktop'].forEach(id => {
     const badge = document.getElementById(id);
     if (badge) badge.className = 'conn-badge' + (connected ? ' connected' : '');
@@ -728,6 +727,26 @@ function updateConnectionUI(connected) {
     syncCard.style.opacity = connected ? '1' : '0.4';
     syncCard.style.pointerEvents = connected ? 'all' : 'none';
     if (connected) syncCard.style.animation = 'slideUp 0.3s ease both';
+  }
+
+  // Auto-refresh setiap 30 detik kalau terhubung
+  clearInterval(window._autoRefreshTimer);
+  if (connected) {
+    let countdown = 30;
+    const badge = document.getElementById('autoRefreshBadge');
+    const tick = () => {
+      if (badge) badge.textContent = `Auto-refresh: ${countdown}s`;
+      countdown--;
+      if (countdown < 0) {
+        countdown = 30;
+        pullFromSheets(true); // silent pull
+      }
+    };
+    tick();
+    window._autoRefreshTimer = setInterval(tick, 1000);
+  } else {
+    const badge = document.getElementById('autoRefreshBadge');
+    if (badge) badge.textContent = 'Auto-refresh: off';
   }
 }
 
