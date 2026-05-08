@@ -813,9 +813,9 @@ function disconnectScript() {
 
 // ---- Pull (Sheets → App) ----
 
-async function pullFromSheets() {
+async function pullFromSheets(silent = false) {
   const url = state.sheets.scriptUrl;
-  showSheetsStatus('⬇️ Mengambil data dari spreadsheet...', 'info', 'syncStatus');
+  if (!silent) showSheetsStatus('⬇️ Mengambil data dari spreadsheet...', 'info', 'syncStatus');
   try {
     const res = await fetch(url + '?action=getTugas');
     const json = await res.json();
@@ -823,12 +823,37 @@ async function pullFromSheets() {
 
     const data = json.data || [];
     if (data.length === 0) {
-      showSheetsStatus('⚠️ Tidak ada data di spreadsheet', 'error', 'syncStatus'); return;
+      if (!silent) showSheetsStatus('⚠️ Tidak ada data di spreadsheet', 'error', 'syncStatus');
+      return;
     }
-    renderSheetsPreview(data);
-    showSheetsStatus(`✅ Berhasil mengambil ${data.length} tugas dari spreadsheet`, 'success', 'syncStatus');
+    if (!silent) {
+      renderSheetsPreview(data);
+      showSheetsStatus(`✅ Berhasil mengambil ${data.length} tugas dari spreadsheet`, 'success', 'syncStatus');
+    } else {
+      // Silent: merge tanpa overwrite data lokal yang lebih baru
+      let added = 0;
+      data.forEach(item => {
+        if (!item.judul) return;
+        const exists = state.tugas.find(t => t.id === item.id);
+        if (exists) {
+          // Update status saja
+          exists.selesai = item.selesai;
+        } else {
+          const mapel = state.mapel.find(m => m.nama.toLowerCase() === (item.mapelNama||'').toLowerCase());
+          state.tugas.push({
+            id: item.id || genId(), judul: item.judul,
+            mapelId: mapel ? mapel.id : (state.mapel[0]?.id || ''),
+            guru: item.guru||'', deadline: item.deadline||'',
+            tipe: item.tipe||'pr', catatan: item.catatan||'',
+            selesai: item.selesai||false, createdAt: item.createdAt||Date.now()
+          });
+          added++;
+        }
+      });
+      if (added > 0) { saveState(); renderTugas(); }
+    }
   } catch(e) {
-    showSheetsStatus('❌ Gagal mengambil data: ' + e.message, 'error', 'syncStatus');
+    if (!silent) showSheetsStatus('❌ Gagal mengambil data: ' + e.message, 'error', 'syncStatus');
   }
 }
 
@@ -1040,12 +1065,16 @@ function init() {
   document.getElementById('btnDownloadTemplate').addEventListener('click', downloadTemplate);
   document.getElementById('btnCopyScript').addEventListener('click', copyScriptCode);
 
-  // Autosave URL script saat diketik
+  // Autosave URL script saat diketik + auto-connect kalau URL valid
   const scriptUrlEl = document.getElementById('scriptUrl');
   if (scriptUrlEl) {
     scriptUrlEl.addEventListener('input', () => {
       state.sheets.scriptUrl = scriptUrlEl.value.trim();
       saveState();
+    });
+    // Enter key langsung connect
+    scriptUrlEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') connectScript();
     });
   }
 
