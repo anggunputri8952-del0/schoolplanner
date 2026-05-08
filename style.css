@@ -17,14 +17,14 @@ input, textarea, select { user-select: text; -webkit-user-select: text; }
 
 /* ===== STICKY MOBILE HEADER ===== */
 .page-header-mobile {
-  background: rgba(15, 17, 23, 0.92);
+  background: rgba(254, 250, 224, 0.95);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
 
 /* ===== BOTTOM NAV ===== */
 .bottom-nav {
-  background: rgba(26, 29, 39, 0.96);
+  background: rgba(250, 237, 205, 0.97);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
@@ -69,14 +69,14 @@ input, textarea, select { user-select: text; -webkit-user-select: text; }
 .nav-item-mobile.active span:first-child { transform: scale(1.15); display: inline-block; }
 
 /* ===== BUTTONS ===== */
-.btn-primary {
+.btn-primary { 
   display: inline-flex; align-items: center; gap: 6px;
   padding: 10px 20px; border-radius: var(--radius-sm);
-  background: var(--primary); color: #fff; border: none;
+  background: var(--primary); color: #3a3a3a; border: 1px solid var(--border);
   font-size: 14px; font-weight: 600; cursor: pointer;
   transition: all 0.18s ease; white-space: nowrap;
 }
-.btn-primary:hover { background: var(--priml); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(108,99,255,0.4); }
+.btn-primary:hover { background: var(--priml); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(168,179,136,0.4); }
 .btn-primary:active { transform: translateY(0); box-shadow: none; }
 
 .btn-primary-sm {
