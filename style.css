@@ -255,9 +255,9 @@ select.input-field option { background: var(--bg2); }
 .deadline-badge {
   padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600;
 }
-.deadline-ok { background: rgba(34,197,94,0.15); color: #86efac; }
-.deadline-soon { background: rgba(245,158,11,0.15); color: #fcd34d; }
-.deadline-late { background: rgba(239,68,68,0.15); color: #fca5a5; }
+.deadline-ok { background: rgba(127,176,105,0.15); color: #4a7c3f; }
+.deadline-soon { background: rgba(244,162,97,0.2); color: #a05a1a; }
+.deadline-late { background: rgba(231,111,81,0.15); color: #c0392b; }
 
 .tugas-actions { display: flex; gap: 4px; flex-shrink: 0; }
 
@@ -449,9 +449,9 @@ select.input-field option { background: var(--bg2); }
   border-radius: 6px; display: inline-block;
   transition: all 0.3s ease;
 }
-.auth-status.local   { background: rgba(92,100,144,0.2); color: var(--text3); }
-.auth-status.saving  { background: rgba(59,130,246,0.15); color: #93c5fd; }
-.auth-status.synced  { background: rgba(34,197,94,0.15); color: #86efac; }
+.auth-status.local   { background: rgba(212,163,115,0.15); color: var(--text3); }
+.auth-status.saving  { background: rgba(212,163,115,0.25); color: #8a5a2a; }
+.auth-status.synced  { background: rgba(127,176,105,0.2); color: #4a7c3f; }
 
 .btn-auth {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
