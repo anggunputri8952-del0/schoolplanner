@@ -3,8 +3,8 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg: #FEFAE0; --bg2: #FAEDCD; --bg3: #E9EDC9;
-  --border: #D4A373; --text: #3a3a3a; --text2: #6b6b6b; --text3: #9a9a9a;
+  --bg: #ffffff; --bg2: #f8f9fa; --bg3: #f0f2f5;
+  --border: #e0e0e0; --text: #1a1a1a; --text2: #555555; --text3: #999999;
   --primary: #CCD5AE; --priml: #b8c49a; --primd: #a8b388;
   --success: #7fb069; --warning: #f4a261; --danger: #e76f51;
   --radius: 14px; --radius-sm: 10px;
