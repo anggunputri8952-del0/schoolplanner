@@ -492,3 +492,11 @@ select.input-field option { background: var(--bg2); }
   -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
 }
+
+/* ===== DETAILS/SUMMARY (setup guide) ===== */
+details { border-top: 1px solid var(--border); padding-top: 12px; }
+details summary { list-style: none; }
+details summary::-webkit-details-marker { display: none; }
+details[open] summary { margin-bottom: 8px; }
+
+#autoRefreshBadge { font-variant-numeric: tabular-nums; min-width: 120px; text-align: center; }
