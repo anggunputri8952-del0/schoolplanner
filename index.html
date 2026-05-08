@@ -1,0 +1,598 @@
+﻿<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="theme-color" content="#0f1117"/>
+  <title>SchoolPlanner</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+      from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { getFirestore, doc, setDoc, getDoc, onSnapshot }
+      from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    // ── Ganti dengan config Firebase project kamu ──
+    const firebaseConfig = {
+      apiKey:            "GANTI_API_KEY",
+      authDomain:        "GANTI_PROJECT_ID.firebaseapp.com",
+      projectId:         "GANTI_PROJECT_ID",
+      storageBucket:     "GANTI_PROJECT_ID.appspot.com",
+      messagingSenderId: "GANTI_SENDER_ID",
+      appId:             "GANTI_APP_ID"
+    };
+
+    const app  = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+
+    let unsubSnapshot = null;
+
+    // Expose ke window supaya app.js bisa akses
+    window._fb = {
+      async saveToCloud(stateData) {
+        const user = auth.currentUser;
+        if (!user) return;
+        try {
+          await setDoc(doc(db, 'users', user.uid), { state: stateData, updatedAt: Date.now() });
+        } catch(e) { console.warn('Firebase save error:', e); }
+      },
+
+      async loadFromCloud() {
+        const user = auth.currentUser;
+        if (!user) return null;
+        try {
+          const snap = await getDoc(doc(db, 'users', user.uid));
+          return snap.exists() ? snap.data().state : null;
+        } catch(e) { console.warn('Firebase load error:', e); return null; }
+      },
+
+      subscribeChanges(callback) {
+        const user = auth.currentUser;
+        if (!user) return;
+        if (unsubSnapshot) unsubSnapshot();
+        unsubSnapshot = onSnapshot(doc(db, 'users', user.uid), (snap) => {
+          if (snap.exists() && snap.metadata.hasPendingWrites === false) {
+            callback(snap.data().state);
+          }
+        });
+      },
+
+      stopSubscribe() {
+        if (unsubSnapshot) { unsubSnapshot(); unsubSnapshot = null; }
+      },
+
+      async login() {
+        const provider = new GoogleAuthProvider();
+        try {
+          await signInWithPopup(auth, provider);
+        } catch(e) { console.warn('Login error:', e); }
+      },
+
+      async logout() {
+        window._fb.stopSubscribe();
+        await signOut(auth);
+      }
+    };
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // Update desktop UI
+        const avatarEl = document.getElementById('authAvatar');
+        const nameEl   = document.getElementById('authName');
+        const btnLogin  = document.getElementById('btnLogin');
+        const btnLogout = document.getElementById('btnLogout');
+        const statusEl  = document.getElementById('authStatus');
+        if (avatarEl)  { avatarEl.src = user.photoURL || ''; avatarEl.style.display = 'block'; }
+        if (nameEl)    { nameEl.textContent = user.displayName || user.email; nameEl.style.display = 'block'; }
+        if (btnLogin)  btnLogin.style.display  = 'none';
+        if (btnLogout) btnLogout.style.display = 'inline-flex';
+        if (statusEl)  { statusEl.textContent = '☁️ Tersimpan di cloud'; statusEl.className = 'auth-status synced'; }
+
+        // Update mobile UI
+        const avatarM  = document.getElementById('authAvatarMobile');
+        const loginM   = document.getElementById('btnLoginMobile');
+        const logoutM  = document.getElementById('btnLogoutMobile');
+        const statusM  = document.getElementById('authStatusMobile');
+        if (avatarM)  { avatarM.src = user.photoURL || ''; avatarM.style.display = 'block'; }
+        if (loginM)   loginM.style.display  = 'none';
+        if (logoutM)  logoutM.style.display = 'inline-flex';
+        if (statusM)  { statusM.textContent = '☁️ Cloud'; statusM.className = 'auth-status synced'; }
+
+        // Load cloud data — tunggu sampai _onCloudLogin siap
+        const cloudState = await window._fb.loadFromCloud();
+        if (cloudState) {
+          if (typeof window._onCloudLogin === 'function') {
+            window._onCloudLogin(cloudState);
+          }
+        }
+
+        // Subscribe realtime
+        window._fb.subscribeChanges((newState) => {
+          if (typeof window._onCloudSync === 'function') window._onCloudSync(newState);
+        });
+      } else {
+        // Update desktop UI
+        const avatarEl = document.getElementById('authAvatar');
+        const nameEl   = document.getElementById('authName');
+        const btnLogin  = document.getElementById('btnLogin');
+        const btnLogout = document.getElementById('btnLogout');
+        const statusEl  = document.getElementById('authStatus');
+        if (avatarEl)  avatarEl.style.display = 'none';
+        if (nameEl)    nameEl.style.display   = 'none';
+        if (btnLogin)  btnLogin.style.display  = 'inline-flex';
+        if (btnLogout) btnLogout.style.display = 'none';
+        if (statusEl)  { statusEl.textContent = '💾 Tersimpan lokal'; statusEl.className = 'auth-status local'; }
+
+        // Update mobile UI
+        const avatarM  = document.getElementById('authAvatarMobile');
+        const loginM   = document.getElementById('btnLoginMobile');
+        const logoutM  = document.getElementById('btnLogoutMobile');
+        const statusM  = document.getElementById('authStatusMobile');
+        if (avatarM)  avatarM.style.display  = 'none';
+        if (loginM)   loginM.style.display   = 'inline-flex';
+        if (logoutM)  logoutM.style.display  = 'none';
+        if (statusM)  { statusM.textContent = '💾 Lokal'; statusM.className = 'auth-status local'; }
+
+        window._fb.stopSubscribe();
+      }
+    });
+  </script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter','sans-serif'] },
+          colors: {
+            bg:'#0f1117', bg2:'#1a1d27', bg3:'#22263a',
+            border:'#2e3250', primary:'#6c63ff', priml:'#8b85ff', primd:'#4f46e5'
+          },
+          animation: {
+            'slide-up':'slideUp 0.32s cubic-bezier(0.34,1.56,0.64,1)',
+            'slide-down':'slideDown 0.22s ease',
+            'fade-in':'fadeIn 0.2s ease',
+            'scale-in':'scaleIn 0.25s cubic-bezier(0.34,1.56,0.64,1)',
+            'bounce-in':'bounceIn 0.35s cubic-bezier(0.34,1.56,0.64,1)',
+            'toast-in':'toastIn 0.3s cubic-bezier(0.34,1.56,0.64,1)',
+          },
+          keyframes: {
+            slideUp:  {from:{opacity:'0',transform:'translateY(20px)'},to:{opacity:'1',transform:'translateY(0)'}},
+            slideDown:{from:{opacity:'0',transform:'translateY(-10px)'},to:{opacity:'1',transform:'translateY(0)'}},
+            fadeIn:   {from:{opacity:'0'},to:{opacity:'1'}},
+            scaleIn:  {from:{opacity:'0',transform:'scale(0.92)'},to:{opacity:'1',transform:'scale(1)'}},
+            bounceIn: {from:{opacity:'0',transform:'scale(0.75)'},to:{opacity:'1',transform:'scale(1)'}},
+            toastIn:  {from:{opacity:'0',transform:'translateY(16px) scale(0.95)'},to:{opacity:'1',transform:'translateY(0) scale(1)'}},
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-bg text-slate-100 font-sans antialiased">
+
+
+<!-- Mobile Bottom Nav -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bottom-nav border-t border-border z-50 safe-bottom">
+  <div class="flex items-center justify-around px-2 py-2">
+    <button class="nav-item-mobile active" data-page="jadwal">
+      <span class="text-2xl">🗓️</span>
+      <span class="text-xs mt-1">Jadwal</span>
+    </button>
+    <button class="nav-item-mobile" data-page="tugas">
+      <span class="text-2xl">📝</span>
+      <span class="text-xs mt-1">Tugas</span>
+    </button>
+    <button class="nav-item-mobile" data-page="spreadsheet">
+      <span class="text-2xl">📊</span>
+      <span class="text-xs mt-1">Sheets</span>
+    </button>
+    <button class="nav-item-mobile" data-page="settings">
+      <span class="text-2xl">⚙️</span>
+      <span class="text-xs mt-1">Setting</span>
+    </button>
+  </div>
+</nav>
+
+<!-- Desktop Sidebar -->
+<aside class="hidden md:flex fixed left-0 top-0 bottom-0 w-64 bg-bg2 border-r border-border flex-col z-40">
+  <div class="p-6 border-b border-border">
+    <div class="flex items-center gap-3">
+      <span class="text-3xl">📚</span>
+      <span class="text-lg font-bold tracking-tight">SchoolPlanner</span>
+    </div>
+  </div>
+  <nav class="flex-1 p-4 space-y-1">
+    <button class="nav-item active" data-page="jadwal">
+      <span class="text-xl">🗓️</span>
+      <span>Jadwal Mapel</span>
+    </button>
+    <button class="nav-item" data-page="tugas">
+      <span class="text-xl">📝</span>
+      <span>Tugas & PR</span>
+    </button>
+    <button class="nav-item" data-page="spreadsheet">
+      <span class="text-xl">📊</span>
+      <span>Google Sheets</span>
+    </button>
+    <button class="nav-item" data-page="settings">
+      <span class="text-xl">⚙️</span>
+      <span>Pengaturan</span>
+    </button>
+  </nav>
+  <div class="p-4 border-t border-border">
+    <div class="text-xs text-slate-500 uppercase tracking-wider mb-1">Hari ini</div>
+    <div class="text-sm font-semibold" id="todayDate"></div>
+    <!-- Auth -->
+    <div class="mt-4 pt-4 border-t border-border">
+      <div class="flex items-center gap-2 mb-2">
+        <img id="authAvatar" src="" alt="" class="w-7 h-7 rounded-full object-cover" style="display:none"/>
+        <span id="authName" class="text-xs text-slate-300 truncate flex-1" style="display:none"></span>
+      </div>
+      <div id="authStatus" class="auth-status local mb-2">💾 Tersimpan lokal</div>
+      <button id="btnLogin" class="btn-auth w-full">🔑 Login Google</button>
+      <button id="btnLogout" class="btn-auth-out w-full" style="display:none">Logout</button>
+    </div>
+  </div>
+</aside>
+
+<!-- Mobile Auth Bar -->
+<div class="md:hidden fixed top-0 left-0 right-0 z-40 mobile-auth-bar flex items-center justify-between px-4 py-2">
+  <div id="authStatusMobile" class="auth-status local text-xs">💾 Lokal</div>
+  <div class="flex items-center gap-2">
+    <img id="authAvatarMobile" src="" alt="" class="w-6 h-6 rounded-full object-cover" style="display:none"/>
+    <button id="btnLoginMobile" class="btn-auth-sm">🔑 Login</button>
+    <button id="btnLogoutMobile" class="btn-auth-out-sm" style="display:none">Logout</button>
+  </div>
+</div>
+
+<!-- Main Content -->
+<main class="md:ml-64 pb-20 md:pb-6 min-h-screen pt-10 md:pt-0">
+
+  <!-- ===== PAGE: JADWAL ===== -->
+  <div class="page active animate-fade-in" id="page-jadwal">
+    <!-- Mobile Header -->
+    <div class="sticky top-10 z-30 page-header-mobile border-b border-border px-4 py-3 md:hidden">
+      <div class="flex items-center justify-between">
+        <h1 class="text-lg font-bold">🗓️ Jadwal Mapel</h1>
+        <button id="btnTambahMapel" class="btn-primary-sm">+ Tambah</button>
+      </div>
+    </div>
+    <!-- Desktop Header -->
+    <div class="hidden md:flex items-center justify-between px-8 pt-8 pb-4">
+      <h1 class="text-2xl font-bold">Jadwal Mapel</h1>
+      <button id="btnTambahMapelDesktop" class="btn-primary">+ Tambah Mapel</button>
+    </div>
+
+    <div class="px-4 md:px-8 pb-4">
+      <!-- Day Tabs -->
+      <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide mb-4">
+        <button class="day-tab active flex-shrink-0" data-day="senin">Senin</button>
+        <button class="day-tab flex-shrink-0" data-day="selasa">Selasa</button>
+        <button class="day-tab flex-shrink-0" data-day="rabu">Rabu</button>
+        <button class="day-tab flex-shrink-0" data-day="kamis">Kamis</button>
+        <button class="day-tab flex-shrink-0" data-day="jumat">Jumat</button>
+      </div>
+
+      <!-- Schedule -->
+      <div class="bg-bg2 rounded-2xl border border-border overflow-hidden">
+        <div class="flex">
+          <div class="w-16 flex-shrink-0 border-r border-border">
+            <div class="h-10 border-b border-border flex items-center justify-center">
+              <span class="text-xs text-slate-500 font-medium">Jam</span>
+            </div>
+            <div id="timeSlots" class="time-slots"></div>
+          </div>
+          <div class="flex-1 relative min-h-96" id="scheduleGrid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PAGE: TUGAS ===== -->
+  <div class="page animate-fade-in" id="page-tugas">
+    <div class="sticky top-10 z-30 page-header-mobile border-b border-border px-4 py-3 md:hidden">
+      <div class="flex items-center justify-between">
+        <h1 class="text-lg font-bold">📝 Tugas & PR</h1>
+        <button id="btnTambahTugas" class="btn-primary-sm">+ Tambah</button>
+      </div>
+    </div>
+    <div class="hidden md:flex items-center justify-between px-8 pt-8 pb-4">
+      <h1 class="text-2xl font-bold">Tugas & PR</h1>
+      <button id="btnTambahTugasDesktop" class="btn-primary">+ Tambah Tugas</button>
+    </div>
+
+    <div class="px-4 md:px-8 pb-4">
+      <!-- Filter Bar -->
+      <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide mb-4">
+        <button class="filter-btn active flex-shrink-0" data-filter="semua">Semua</button>
+        <button class="filter-btn flex-shrink-0" data-filter="belum">Belum Selesai</button>
+        <button class="filter-btn flex-shrink-0" data-filter="selesai">Selesai</button>
+        <button class="filter-btn flex-shrink-0" data-filter="terlambat">Terlambat</button>
+      </div>
+      <!-- Tugas List -->
+      <div id="tugasList" class="space-y-3"></div>
+    </div>
+  </div>
+
+  <!-- ===== PAGE: SPREADSHEET ===== -->
+  <div class="page animate-fade-in" id="page-spreadsheet">
+    <div class="sticky top-10 z-30 page-header-mobile border-b border-border px-4 py-3 md:hidden">
+      <div class="flex items-center justify-between">
+        <h1 class="text-lg font-bold">📊 Google Sheets</h1>
+        <div id="connectionBadge" class="conn-badge">
+          <span class="badge-dot"></span>
+          <span id="connectionLabel" class="text-xs font-medium">Belum terhubung</span>
+        </div>
+      </div>
+    </div>
+    <div class="hidden md:flex items-center justify-between px-8 pt-8 pb-4">
+      <h1 class="text-2xl font-bold">Google Sheets via Apps Script</h1>
+      <div id="connectionBadgeDesktop" class="conn-badge">
+        <span class="badge-dot"></span>
+        <span id="connectionLabelDesktop" class="text-xs font-medium">Belum terhubung</span>
+      </div>
+    </div>
+
+    <div class="px-4 md:px-8 pb-4 space-y-4">
+      <!-- Step 1 -->
+      <div class="card animate-slide-up" style="animation-delay:0ms">
+        <div class="flex gap-4 mb-4">
+          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">1</div>
+          <div>
+            <h2 class="text-base font-semibold mb-1">Buat Google Apps Script</h2>
+            <p class="text-sm text-slate-400">Deploy script sebagai Web App untuk menghubungkan SchoolPlanner ke spreadsheet kamu.</p>
+          </div>
+        </div>
+        <div class="bg-bg3 rounded-xl border border-border p-4 space-y-3 mb-4">
+          <div class="flex gap-3 text-sm text-slate-300"><span>①</span><span>Buka <a href="https://script.google.com" target="_blank" class="text-priml underline">script.google.com</a> → klik <strong>New Project</strong></span></div>
+          <div class="flex gap-3 text-sm text-slate-300"><span>②</span><span>Hapus kode default, paste kode dari file <code class="bg-bg text-priml px-1.5 py-0.5 rounded text-xs">Code.gs</code></span></div>
+          <div class="flex gap-3 text-sm text-slate-300"><span>③</span><span>Ganti <code class="bg-bg text-priml px-1.5 py-0.5 rounded text-xs">SPREADSHEET_ID</code> dengan ID spreadsheet kamu</span></div>
+          <div class="flex gap-3 text-sm text-slate-300"><span>④</span><span>Klik <strong>Deploy → New Deployment → Web App</strong></span></div>
+          <div class="flex gap-3 text-sm text-slate-300"><span>⑤</span><span>Set <strong>Execute as: Me</strong> dan <strong>Who has access: Anyone</strong> → Deploy</span></div>
+          <div class="flex gap-3 text-sm text-slate-300"><span>⑥</span><span>Copy URL Web App → paste di bawah</span></div>
+        </div>
+        <button id="btnCopyScript" class="btn-secondary w-full md:w-auto">📋 Copy Kode Apps Script</button>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="card animate-slide-up" style="animation-delay:60ms">
+        <div class="flex gap-4 mb-4">
+          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">2</div>
+          <div>
+            <h2 class="text-base font-semibold mb-1">Hubungkan ke SchoolPlanner</h2>
+            <p class="text-sm text-slate-400">Paste URL Web App dari Apps Script kamu.</p>
+          </div>
+        </div>
+        <div class="form-group mb-4">
+          <label class="form-label">URL Web App (Apps Script)</label>
+          <input type="url" id="scriptUrl" placeholder="https://script.google.com/macros/s/.../exec" class="input-field"/>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button id="btnConnectScript" class="btn-primary flex-1 md:flex-none">🔌 Hubungkan</button>
+          <button id="btnPingScript" class="btn-secondary flex-1 md:flex-none" disabled>🏓 Test</button>
+          <button id="btnDisconnect" class="btn-danger-outline ml-auto" disabled>Putuskan</button>
+        </div>
+        <div id="sheetsStatus" class="status-msg mt-3"></div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="card animate-slide-up" id="syncCard" style="animation-delay:120ms;opacity:0.4;pointer-events:none">
+        <div class="flex gap-4 mb-4">
+          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">3</div>
+          <div>
+            <h2 class="text-base font-semibold mb-1">Sinkronisasi Data</h2>
+            <p class="text-sm text-slate-400">Tarik data dari spreadsheet atau push semua tugas ke spreadsheet.</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div class="bg-bg3 rounded-xl border border-border p-4">
+            <button id="btnPullTugas" class="btn-primary w-full mb-2">⬇️ Pull dari Sheets</button>
+            <p class="text-xs text-slate-500">Ambil tugas dari spreadsheet → tambahkan ke app (skip duplikat)</p>
+          </div>
+          <div class="bg-bg3 rounded-xl border border-border p-4">
+            <button id="btnPushTugas" class="btn-secondary w-full mb-2">⬆️ Push ke Sheets</button>
+            <p class="text-xs text-slate-500">Kirim semua tugas dari app → tulis ke spreadsheet (overwrite)</p>
+          </div>
+        </div>
+        <div id="syncStatus" class="status-msg mt-3"></div>
+      </div>
+
+      <!-- Preview -->
+      <div class="card animate-slide-up" id="sheetsPreview" style="display:none;animation-delay:180ms">
+        <h2 class="text-base font-semibold mb-3">📄 Preview Data dari Sheets</h2>
+        <div id="sheetsPreviewContent"></div>
+        <div class="flex flex-wrap gap-2 mt-4">
+          <button id="btnImportSheets" class="btn-primary flex-1 md:flex-none">✅ Import ke Tugas</button>
+          <button id="btnDownloadTemplate" class="btn-secondary flex-1 md:flex-none">⬇️ Download Template</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PAGE: SETTINGS ===== -->
+  <div class="page animate-fade-in" id="page-settings">
+    <div class="sticky top-10 z-30 page-header-mobile border-b border-border px-4 py-3 md:hidden">
+      <h1 class="text-lg font-bold">⚙️ Pengaturan</h1>
+    </div>
+    <div class="hidden md:block px-8 pt-8 pb-4">
+      <h1 class="text-2xl font-bold">Pengaturan</h1>
+    </div>
+
+    <div class="px-4 md:px-8 pb-4 space-y-4">
+      <!-- Mata Pelajaran -->
+      <div class="card animate-slide-up" style="animation-delay:0ms">
+        <h2 class="text-base font-semibold mb-1">🎨 Mata Pelajaran</h2>
+        <p class="text-sm text-slate-400 mb-4">Kelola daftar mata pelajaran dan warnanya.</p>
+        <div id="mapelList" class="space-y-2 mb-4"></div>
+        <button id="btnTambahMapelSettings" class="btn-secondary w-full md:w-auto">+ Tambah Mapel Baru</button>
+      </div>
+
+      <!-- Jam Sekolah -->
+      <div class="card animate-slide-up" style="animation-delay:60ms">
+        <h2 class="text-base font-semibold mb-1">🕐 Jam Sekolah</h2>
+        <p class="text-sm text-slate-400 mb-4">Atur rentang waktu dan durasi per slot jadwal.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+          <div class="form-group">
+            <label class="form-label">Jam Mulai</label>
+            <input type="time" id="jamMulai" value="06:15" class="input-field"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Jam Selesai</label>
+            <input type="time" id="jamSelesai" value="15:15" class="input-field"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Durasi Slot (menit)</label>
+            <input type="number" id="durasiSlot" value="45" min="15" max="120" class="input-field"/>
+          </div>
+        </div>
+        <button id="btnSaveJam" class="btn-primary w-full md:w-auto">Simpan Pengaturan</button>
+      </div>
+
+      <!-- Reset -->
+      <div class="card card-danger animate-slide-up" style="animation-delay:120ms">
+        <h2 class="text-base font-semibold text-red-400 mb-1">⚠️ Reset Data</h2>
+        <p class="text-sm text-slate-400 mb-4">Hapus semua data jadwal dan tugas. Tidak bisa dibatalkan.</p>
+        <button id="btnResetData" class="btn-danger w-full md:w-auto">Reset Semua Data</button>
+      </div>
+    </div>
+  </div>
+
+</main><!-- end main -->
+
+<!-- ===== MODAL: TAMBAH MAPEL (Jadwal) ===== -->
+<div class="modal-overlay" id="modalMapel">
+  <div class="modal animate-scale-in">
+    <div class="modal-header">
+      <h2 class="text-base font-semibold" id="modalMapelTitle">Tambah Mapel</h2>
+      <button class="modal-close" id="closeModalMapel">✕</button>
+    </div>
+    <div class="modal-body space-y-4">
+      <div class="form-group">
+        <label class="form-label">Mata Pelajaran</label>
+        <select id="mapelSelect" class="input-field"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Hari</label>
+        <select id="hariSelect" class="input-field">
+          <option value="senin">Senin</option>
+          <option value="selasa">Selasa</option>
+          <option value="rabu">Rabu</option>
+          <option value="kamis">Kamis</option>
+          <option value="jumat">Jumat</option>
+        </select>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="form-group">
+          <label class="form-label">Jam Mulai</label>
+          <input type="time" id="jamMulaiMapel" class="input-field"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Jam Selesai</label>
+          <input type="time" id="jamSelesaiMapel" class="input-field"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nama Guru</label>
+        <input type="text" id="namaGuru" placeholder="Contoh: Bu Sari" class="input-field"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ruangan (opsional)</label>
+        <input type="text" id="ruangan" placeholder="Contoh: Kelas 10A" class="input-field"/>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" id="cancelModalMapel">Batal</button>
+      <button class="btn-primary" id="saveModalMapel">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: TAMBAH TUGAS ===== -->
+<div class="modal-overlay" id="modalTugas">
+  <div class="modal animate-scale-in">
+    <div class="modal-header">
+      <h2 class="text-base font-semibold" id="modalTugasTitle">Tambah Tugas</h2>
+      <button class="modal-close" id="closeModalTugas">✕</button>
+    </div>
+    <div class="modal-body space-y-4">
+      <div class="form-group">
+        <label class="form-label">Judul Tugas</label>
+        <input type="text" id="judulTugas" placeholder="Contoh: Latihan Soal Bab 3" class="input-field"/>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="form-group">
+          <label class="form-label">Mata Pelajaran</label>
+          <select id="mapelTugas" class="input-field"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tipe</label>
+          <select id="tipeTugas" class="input-field">
+            <option value="pr">PR</option>
+            <option value="tugas">Tugas Kelas</option>
+            <option value="ulangan">Ulangan/Ujian</option>
+            <option value="proyek">Proyek</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="form-group">
+          <label class="form-label">Nama Guru</label>
+          <input type="text" id="guruTugas" placeholder="Bu Sari" class="input-field"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Deadline</label>
+          <input type="date" id="deadlineTugas" class="input-field"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Catatan (opsional)</label>
+        <textarea id="catatanTugas" placeholder="Tambahkan catatan..." class="input-field" rows="3" style="resize:vertical"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" id="cancelModalTugas">Batal</button>
+      <button class="btn-primary" id="saveModalTugas">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: TAMBAH MAPEL BARU (Settings) ===== -->
+<div class="modal-overlay" id="modalMapelBaru">
+  <div class="modal modal-sm animate-scale-in">
+    <div class="modal-header">
+      <h2 class="text-base font-semibold">Tambah Mata Pelajaran</h2>
+      <button class="modal-close" id="closeModalMapelBaru">✕</button>
+    </div>
+    <div class="modal-body space-y-4">
+      <div class="form-group">
+        <label class="form-label">Nama Mata Pelajaran</label>
+        <input type="text" id="namaMapelBaru" placeholder="Contoh: Matematika" class="input-field"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Warna</label>
+        <div id="colorOptions" class="flex flex-wrap gap-2 mt-2"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ikon (emoji)</label>
+        <input type="text" id="ikonMapel" placeholder="📐" class="input-field" maxlength="2"/>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" id="cancelModalMapelBaru">Batal</button>
+      <button class="btn-primary" id="saveModalMapelBaru">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast-base"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
