@@ -276,3 +276,120 @@ function saveModalMapel() {
   renderJadwal(); closeModalMapel(); clearDraft('jadwal');
   showToast('Jadwal disimpan!','success');
 }
+
+// ===== TUGAS =====
+function renderTugas() {
+  const list = document.getElementById('tugasList');
+  if (!list) return;
+  let items = [...state.tugas];
+
+  if (activeFilter === 'belum') items = items.filter(t => !t.selesai);
+  else if (activeFilter === 'selesai') items = items.filter(t => t.selesai);
+  else if (activeFilter === 'hari-ini') {
+    const today = new Date(); today.setHours(0,0,0,0);
+    items = items.filter(t => { if(!t.deadline)return false; const p=t.deadline.split('-').map(Number); return new Date(p[0],p[1]-1,p[2]).getTime()===today.getTime(); });
+  } else if (activeFilter === 'terlambat') {
+    const now = new Date(); now.setHours(0,0,0,0);
+    items = items.filter(t => { if(t.selesai||!t.deadline)return false; const p=t.deadline.split('-').map(Number); return new Date(p[0],p[1]-1,p[2])<now; });
+  }
+
+  const pOrder = { tinggi:0, sedang:1, rendah:2 };
+  items.sort((a,b) => {
+    if (a.selesai !== b.selesai) return a.selesai ? 1 : -1;
+    const pa = pOrder[a.prioritas||'sedang']??1, pb = pOrder[b.prioritas||'sedang']??1;
+    if (pa !== pb) return pa - pb;
+    if (!a.deadline) return 1; if (!b.deadline) return -1;
+    return new Date(a.deadline) - new Date(b.deadline);
+  });
+
+  if (items.length === 0) { list.innerHTML = '<div class="empty-tugas"><div class="empty-icon">✅</div><p>Tidak ada tugas di sini</p></div>'; return; }
+
+  const tipeBadge = { pr:'badge-pr', tugas:'badge-tugas', ulangan:'badge-ulangan', proyek:'badge-proyek' };
+  const tipeLabel = { pr:'PR', tugas:'Tugas', ulangan:'Ulangan', proyek:'Proyek' };
+  const prioIcon  = { tinggi:'🔴', sedang:'🟡', rendah:'🟢' };
+
+  list.innerHTML = '';
+  items.forEach(t => {
+    const mapel = state.mapel.find(m => m.id === t.mapelId);
+    const ds = getDeadlineStatus(t.deadline);
+    const prio = t.prioritas || 'sedang';
+
+    const item = document.createElement('div');
+    item.className = 'tugas-item'+(t.selesai?' selesai':'');
+
+    const cb = document.createElement('div');
+    cb.className = 'tugas-checkbox'+(t.selesai?' checked':'');
+    cb.textContent = t.selesai ? '✓' : ''; cb.title = 'Tandai selesai';
+    cb.addEventListener('click', e => { e.stopPropagation(); toggleTugas(t.id); });
+
+    const content = document.createElement('div'); content.className = 'tugas-content';
+
+    const judulRow = document.createElement('div'); judulRow.className = 'tugas-judul-row';
+    const judulEl = document.createElement('span'); judulEl.className = 'tugas-judul'; judulEl.textContent = t.judul;
+    const prioEl = document.createElement('span'); prioEl.className = 'prio-icon'; prioEl.title = 'Prioritas '+prio; prioEl.textContent = prioIcon[prio]||'🟡';
+    judulRow.appendChild(judulEl); judulRow.appendChild(prioEl); content.appendChild(judulRow);
+
+    const meta = document.createElement('div'); meta.className = 'tugas-meta';
+    if (mapel) { const ms=document.createElement('span'); ms.className='tugas-meta-item'; ms.style.color=mapel.warna; ms.textContent=mapel.ikon+' '+mapel.nama; meta.appendChild(ms); }
+    if (t.guru) { const gs=document.createElement('span'); gs.className='tugas-meta-item'; gs.textContent='👤 '+t.guru; meta.appendChild(gs); }
+    const ds2=document.createElement('span'); ds2.className='tugas-meta-item'; ds2.textContent='📅 '+formatDeadline(t.deadline); meta.appendChild(ds2);
+    const badge=document.createElement('span'); badge.className='badge '+(tipeBadge[t.tipe]||'badge-tugas'); badge.textContent=tipeLabel[t.tipe]||t.tipe; meta.appendChild(badge);
+    const dlBadge=document.createElement('span'); dlBadge.className='deadline-badge '+ds.cls; dlBadge.textContent=ds.label; meta.appendChild(dlBadge);
+    content.appendChild(meta);
+
+    if (t.catatan) { const cat=document.createElement('div'); cat.className='tugas-catatan'; cat.textContent='📌 '+t.catatan; content.appendChild(cat); }
+
+    if (t.subtasks && t.subtasks.length > 0) {
+      const done = t.subtasks.filter(s=>s.done).length;
+      const stBar = document.createElement('div'); stBar.className = 'subtask-bar';
+      stBar.innerHTML = `<div class="subtask-progress"><div class="subtask-fill" style="width:${Math.round(done/t.subtasks.length*100)}%"></div></div><span class="subtask-label">${done}/${t.subtasks.length} subtask</span>`;
+      content.appendChild(stBar);
+    }
+
+    const actions = document.createElement('div'); actions.className = 'tugas-actions';
+    const editBtn = document.createElement('button'); editBtn.className='btn-icon'; editBtn.title='Edit'; editBtn.textContent='✏️';
+    editBtn.addEventListener('click', e => { e.stopPropagation(); openModalTugas(t.id); });
+    const delBtn = document.createElement('button'); delBtn.className='btn-icon danger'; delBtn.title='Hapus'; delBtn.textContent='🗑️';
+    delBtn.addEventListener('click', e => { e.stopPropagation(); hapusTugas(t.id); });
+    actions.appendChild(editBtn); actions.appendChild(delBtn);
+
+    item.appendChild(cb); item.appendChild(content); item.appendChild(actions);
+    list.appendChild(item);
+  });
+  renderDeadlineAlert();
+}
+
+function renderDeadlineAlert() {
+  const banner = document.getElementById('deadlineAlert');
+  if (!banner) return;
+  const now = new Date(); now.setHours(0,0,0,0);
+  const urgent = state.tugas.filter(t => {
+    if (t.selesai || !t.deadline) return false;
+    const p = t.deadline.split('-').map(Number);
+    return (new Date(p[0],p[1]-1,p[2]) - now) / 86400000 <= 1;
+  });
+  if (urgent.length > 0) {
+    banner.style.display = 'flex';
+    banner.querySelector('.alert-text').textContent = `⚠️ ${urgent.length} tugas deadline hari ini atau besok!`;
+  } else { banner.style.display = 'none'; }
+}
+
+function toggleTugas(id) {
+  const t = state.tugas.find(t => t.id === id);
+  if (t) { t.selesai = !t.selesai; saveState(); renderTugas(); syncStatusToSheets(id, t.selesai); }
+}
+
+function hapusTugas(id) {
+  if (!confirm('Hapus tugas ini?')) return;
+  state.tugas = state.tugas.filter(t => t.id !== id);
+  saveState(); renderTugas(); showToast('Tugas dihapus','success');
+}
+
+function initFilterBar() {
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active'); activeFilter = btn.dataset.filter; renderTugas();
+    });
+  });
+}
