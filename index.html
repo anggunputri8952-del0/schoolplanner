@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <meta name="theme-color" content="#0f1117"/>
+  <meta name="theme-color" content="#ffffff"/>
   <title>SchoolPlanner</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -19,12 +19,12 @@
 
     // ── Ganti dengan config Firebase project kamu ──
     const firebaseConfig = {
-      apiKey:            "GANTI_API_KEY",
-      authDomain:        "GANTI_PROJECT_ID.firebaseapp.com",
-      projectId:         "GANTI_PROJECT_ID",
-      storageBucket:     "GANTI_PROJECT_ID.appspot.com",
-      messagingSenderId: "GANTI_SENDER_ID",
-      appId:             "GANTI_APP_ID"
+      apiKey:            "AIzaSyCvD3iPUGM6i0x2xWkRWX3-uH7_9Q360T8",
+      authDomain:        "homework-a9f50.firebaseapp.com",
+      projectId:         "homework-a9f50",
+      storageBucket:     "homework-a9f50.firebasestorage.app",
+      messagingSenderId: "850682145099",
+      appId:             "1:850682145099:web:0748cc50119637662b60ce"
     };
 
     const app  = initializeApp(firebaseConfig);
@@ -150,8 +150,8 @@
         extend: {
           fontFamily: { sans: ['Inter','sans-serif'] },
           colors: {
-            bg:'#0f1117', bg2:'#1a1d27', bg3:'#22263a',
-            border:'#2e3250', primary:'#6c63ff', priml:'#8b85ff', primd:'#4f46e5'
+            bg:'#ffffff', bg2:'#f8f9fa', bg3:'#f0f2f5',
+            border:'#e0e0e0', primary:'#CCD5AE', priml:'#b8c49a', primd:'#a8b388'
           },
           animation: {
             'slide-up':'slideUp 0.32s cubic-bezier(0.34,1.56,0.64,1)',
@@ -174,7 +174,7 @@
     }
   </script>
 </head>
-<body class="bg-bg text-slate-100 font-sans antialiased">
+<body class="bg-bg font-sans antialiased" style="color:var(--text)">
 
 
 <!-- Mobile Bottom Nav -->
@@ -226,7 +226,7 @@
     </button>
   </nav>
   <div class="p-4 border-t border-border">
-    <div class="text-xs text-slate-500 uppercase tracking-wider mb-1">Hari ini</div>
+    <div class="text-xs uppercase tracking-wider mb-1" style="color:var(--text3)">Hari ini</div>
     <div class="text-sm font-semibold" id="todayDate"></div>
     <!-- Auth -->
     <div class="mt-4 pt-4 border-t border-border">
@@ -343,19 +343,18 @@
       <!-- Step 1 -->
       <div class="card animate-slide-up" style="animation-delay:0ms">
         <div class="flex gap-4 mb-4">
-          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">1</div>
+          <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5" style="background:var(--primary);border:1px solid var(--border)">1</div>
           <div>
             <h2 class="text-base font-semibold mb-1">Buat Google Apps Script</h2>
-            <p class="text-sm text-slate-400">Deploy script sebagai Web App untuk menghubungkan SchoolPlanner ke spreadsheet kamu.</p>
+            <p class="text-sm" style="color:var(--text2)">Deploy script sebagai Web App untuk menghubungkan SchoolPlanner ke spreadsheet kamu.</p>
           </div>
         </div>
-        <div class="bg-bg3 rounded-xl border border-border p-4 space-y-3 mb-4">
-          <div class="flex gap-3 text-sm text-slate-300"><span>①</span><span>Buka <a href="https://script.google.com" target="_blank" class="text-priml underline">script.google.com</a> → klik <strong>New Project</strong></span></div>
-          <div class="flex gap-3 text-sm text-slate-300"><span>②</span><span>Hapus kode default, paste kode dari file <code class="bg-bg text-priml px-1.5 py-0.5 rounded text-xs">Code.gs</code></span></div>
-          <div class="flex gap-3 text-sm text-slate-300"><span>③</span><span>Ganti <code class="bg-bg text-priml px-1.5 py-0.5 rounded text-xs">SPREADSHEET_ID</code> dengan ID spreadsheet kamu</span></div>
-          <div class="flex gap-3 text-sm text-slate-300"><span>④</span><span>Klik <strong>Deploy → New Deployment → Web App</strong></span></div>
-          <div class="flex gap-3 text-sm text-slate-300"><span>⑤</span><span>Set <strong>Execute as: Me</strong> dan <strong>Who has access: Anyone</strong> → Deploy</span></div>
-          <div class="flex gap-3 text-sm text-slate-300"><span>⑥</span><span>Copy URL Web App → paste di bawah</span></div>
+        <div class="rounded-xl border p-4 space-y-3 mb-4" style="background:var(--bg3);border-color:var(--border)">
+          <div class="flex gap-3 text-sm" style="color:var(--text2)"><span>①</span><span>Buka <a href="https://script.google.com" target="_blank" class="underline font-medium" style="color:var(--primd)">script.google.com</a> → klik <strong>New Project</strong></span></div>
+          <div class="flex gap-3 text-sm" style="color:var(--text2)"><span>②</span><span>Hapus kode default, paste kode dari tombol di bawah. Ganti <code class="px-1.5 py-0.5 rounded text-xs" style="background:var(--bg);color:var(--primd)">SPREADSHEET_ID</code></span></div>
+          <div class="flex gap-3 text-sm" style="color:var(--text2)"><span>③</span><span>Klik <strong>Deploy → New Deployment → Web App</strong></span></div>
+          <div class="flex gap-3 text-sm" style="color:var(--text2)"><span>④</span><span>Set <strong>Execute as: Me</strong> dan <strong>Who has access: Anyone</strong> → Deploy</span></div>
+          <div class="flex gap-3 text-sm" style="color:var(--text2)"><span>⑤</span><span>Copy URL Web App → paste di Step 2</span></div>
         </div>
         <button id="btnCopyScript" class="btn-secondary w-full md:w-auto">📋 Copy Kode Apps Script</button>
       </div>
@@ -363,10 +362,10 @@
       <!-- Step 2 -->
       <div class="card animate-slide-up" style="animation-delay:60ms">
         <div class="flex gap-4 mb-4">
-          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">2</div>
+          <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5" style="background:var(--primary);border:1px solid var(--border)">2</div>
           <div>
             <h2 class="text-base font-semibold mb-1">Hubungkan ke SchoolPlanner</h2>
-            <p class="text-sm text-slate-400">Paste URL Web App dari Apps Script kamu.</p>
+            <p class="text-sm" style="color:var(--text2)">Paste URL Web App dari Apps Script kamu. URL otomatis tersimpan.</p>
           </div>
         </div>
         <div class="form-group mb-4">
@@ -384,20 +383,23 @@
       <!-- Step 3 -->
       <div class="card animate-slide-up" id="syncCard" style="animation-delay:120ms;opacity:0.4;pointer-events:none">
         <div class="flex gap-4 mb-4">
-          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">3</div>
-          <div>
-            <h2 class="text-base font-semibold mb-1">Sinkronisasi Data</h2>
-            <p class="text-sm text-slate-400">Tarik data dari spreadsheet atau push semua tugas ke spreadsheet.</p>
+          <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5" style="background:var(--primary);border:1px solid var(--border)">3</div>
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <h2 class="text-base font-semibold mb-1">Sinkronisasi Data</h2>
+              <span id="autoRefreshBadge" class="text-xs px-2 py-1 rounded-full" style="background:var(--bg3);color:var(--text3)">Auto-refresh: off</span>
+            </div>
+            <p class="text-sm" style="color:var(--text2)">Tarik data dari spreadsheet atau push semua tugas ke spreadsheet.</p>
           </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div class="bg-bg3 rounded-xl border border-border p-4">
+          <div class="rounded-xl border p-4" style="background:var(--bg3);border-color:var(--border)">
             <button id="btnPullTugas" class="btn-primary w-full mb-2">⬇️ Pull dari Sheets</button>
-            <p class="text-xs text-slate-500">Ambil tugas dari spreadsheet → tambahkan ke app (skip duplikat)</p>
+            <p class="text-xs" style="color:var(--text3)">Ambil tugas dari spreadsheet → tambahkan ke app (skip duplikat)</p>
           </div>
-          <div class="bg-bg3 rounded-xl border border-border p-4">
+          <div class="rounded-xl border p-4" style="background:var(--bg3);border-color:var(--border)">
             <button id="btnPushTugas" class="btn-secondary w-full mb-2">⬆️ Push ke Sheets</button>
-            <p class="text-xs text-slate-500">Kirim semua tugas dari app → tulis ke spreadsheet (overwrite)</p>
+            <p class="text-xs" style="color:var(--text3)">Kirim semua tugas dari app → tulis ke spreadsheet (overwrite)</p>
           </div>
         </div>
         <div id="syncStatus" class="status-msg mt-3"></div>
@@ -428,7 +430,7 @@
       <!-- Mata Pelajaran -->
       <div class="card animate-slide-up" style="animation-delay:0ms">
         <h2 class="text-base font-semibold mb-1">🎨 Mata Pelajaran</h2>
-        <p class="text-sm text-slate-400 mb-4">Kelola daftar mata pelajaran dan warnanya.</p>
+        <p class="text-sm mb-4" style="color:var(--text2)">Kelola daftar mata pelajaran dan warnanya.</p>
         <div id="mapelList" class="space-y-2 mb-4"></div>
         <button id="btnTambahMapelSettings" class="btn-secondary w-full md:w-auto">+ Tambah Mapel Baru</button>
       </div>
@@ -436,7 +438,7 @@
       <!-- Jam Sekolah -->
       <div class="card animate-slide-up" style="animation-delay:60ms">
         <h2 class="text-base font-semibold mb-1">🕐 Jam Sekolah</h2>
-        <p class="text-sm text-slate-400 mb-4">Atur rentang waktu dan durasi per slot jadwal.</p>
+        <p class="text-sm mb-4" style="color:var(--text2)">Atur rentang waktu dan durasi per slot jadwal.</p>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
           <div class="form-group">
             <label class="form-label">Jam Mulai</label>
@@ -457,7 +459,7 @@
       <!-- Reset -->
       <div class="card card-danger animate-slide-up" style="animation-delay:120ms">
         <h2 class="text-base font-semibold text-red-400 mb-1">⚠️ Reset Data</h2>
-        <p class="text-sm text-slate-400 mb-4">Hapus semua data jadwal dan tugas. Tidak bisa dibatalkan.</p>
+        <p class="text-sm mb-4" style="color:var(--text2)">Hapus semua data jadwal dan tugas. Tidak bisa dibatalkan.</p>
         <button id="btnResetData" class="btn-danger w-full md:w-auto">Reset Semua Data</button>
       </div>
     </div>
