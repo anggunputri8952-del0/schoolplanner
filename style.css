@@ -501,3 +501,97 @@ textarea.input-field { resize: vertical; min-height: 72px; }
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
 }
+
+/* ===== POMODORO ===== */
+.pom-timer {
+  font-size: 72px; font-weight: 800; letter-spacing: -2px;
+  color: var(--text); font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+@media (max-width: 400px) { .pom-timer { font-size: 56px; } }
+
+/* ===== OVERVIEW ===== */
+.overview-stats {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px;
+}
+@media (min-width: 640px) { .overview-stats { grid-template-columns: repeat(4, 1fr); } }
+
+.stat-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; text-align: center;
+}
+.stat-num { font-size: 28px; font-weight: 800; color: var(--text); line-height: 1; }
+.stat-label { font-size: 12px; color: var(--text2); margin-top: 4px; }
+
+.overview-section-title { font-size: 14px; font-weight: 600; color: var(--text2); margin-bottom: 12px; margin-top: 4px; }
+
+.overview-week {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 20px;
+  overflow-x: auto;
+}
+.overview-day { min-width: 0; }
+.overview-day-label {
+  font-size: 11px; font-weight: 600; color: var(--text2);
+  text-align: center; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.overview-slot {
+  border-radius: 8px; padding: 5px 7px; margin-bottom: 4px;
+  display: flex; flex-direction: column; gap: 1px; overflow: hidden;
+}
+.overview-slot-name { font-size: 11px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.overview-slot-time { font-size: 10px; color: var(--text2); }
+.overview-empty { text-align: center; font-size: 18px; padding: 8px 0; color: var(--text3); }
+
+.overview-task-list { display: flex; flex-direction: column; gap: 8px; }
+.overview-task-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.overview-task-mapel { font-size: 16px; flex-shrink: 0; }
+.overview-task-judul { flex: 1; font-size: 13px; font-weight: 500; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.overview-no-task { text-align: center; padding: 24px; color: var(--text3); font-size: 14px; }
+
+/* ===== ANIMATIONS ===== */
+@keyframes slideUp   { from { opacity:0; transform:translateY(20px); }  to { opacity:1; transform:translateY(0); } }
+@keyframes slideDown { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeIn    { from { opacity:0; }  to { opacity:1; } }
+@keyframes scaleIn   { from { opacity:0; transform:scale(0.92); } to { opacity:1; transform:scale(1); } }
+
+.tugas-item:nth-child(1) { animation-delay: 0ms; }
+.tugas-item:nth-child(2) { animation-delay: 40ms; }
+.tugas-item:nth-child(3) { animation-delay: 80ms; }
+.tugas-item:nth-child(4) { animation-delay: 120ms; }
+.tugas-item:nth-child(n+5) { animation-delay: 160ms; }
+
+/* ===== TOUCH DEVICES ===== */
+@media (hover: none) {
+  .btn-primary:active  { transform: scale(0.96); background: var(--primd); }
+  .btn-secondary:active { transform: scale(0.96); }
+  .tugas-item:active   { transform: scale(0.99); }
+  .day-tab:active      { transform: scale(0.96); }
+  /* Always show delete on touch */
+  .schedule-item .item-delete { display: flex; }
+}
+
+/* ===== RESPONSIVE FIXES ===== */
+@media (max-width: 360px) {
+  .modal-body { padding: 14px 16px; }
+  .modal-footer { padding: 12px 16px; padding-bottom: max(16px, calc(16px + env(safe-area-inset-bottom, 0px))); }
+  .card { padding: 16px; }
+  .pom-timer { font-size: 52px; }
+}
+
+@media (max-width: 639px) {
+  .overview-week { grid-template-columns: repeat(5, minmax(60px, 1fr)); }
+}
+
+/* Landscape mobile fix */
+@media (max-height: 500px) and (orientation: landscape) {
+  .modal { max-height: 95vh; }
+  .bottom-nav { display: none; }
+  main { padding-bottom: 0; }
+}
+
+/* ===== AUTOREFRESH BADGE ===== */
+#autoRefreshBadge { font-variant-numeric: tabular-nums; min-width: 120px; text-align: center; }
