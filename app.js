@@ -860,23 +860,28 @@ async function pullFromSheets(silent=false) {
     const res=await fetch(url+'?action=getTugas'), json=await res.json();
     if (!json.ok) throw new Error(json.error);
     const data = json.data||[];
-    if (data.length===0) { if(!silent)showSheetsStatus('⚠️ Tidak ada data di spreadsheet','error','syncStatus'); return; }
-    if (!silent) { renderSheetsPreview(data); showSheetsStatus(`✅ Berhasil mengambil ${data.length} tugas`,'success','syncStatus'); }
-    else {
-      let added=0;
-      data.forEach(item => {
-        if (!item.judul) return;
-        const exists = state.tugas.find(t => t.id===item.id);
-        if (exists) { exists.selesai=item.selesai; }
-        else {
-          const mapel=state.mapel.find(m=>m.nama.toLowerCase()===(item.mapelNama||'').toLowerCase());
-          state.tugas.push({ id:item.id||genId(), judul:item.judul, mapelId:mapel?mapel.id:(state.mapel[0]?.id||''), guru:item.guru||'', deadline:item.deadline||'', tipe:item.tipe||'pr', catatan:item.catatan||'', prioritas:'sedang', subtasks:[], selesai:item.selesai||false, createdAt:item.createdAt||Date.now() });
-          added++;
-        }
-      });
-      if (added>0) { saveState(); renderTugas(); }
+    if (data.length===0) {
+      if (!silent) showSheetsStatus('ℹ️ Spreadsheet kosong. Tugas yang kamu tambah akan otomatis tersimpan ke sini.','info','syncStatus');
+      return;
     }
-  } catch(e) { if(!silent)showSheetsStatus('❌ Gagal: '+e.message,'error','syncStatus'); }
+    // Merge: tambah yang belum ada, update status yang sudah ada
+    let added=0;
+    data.forEach(item => {
+      if (!item.judul) return;
+      const exists = state.tugas.find(t => t.id===item.id);
+      if (exists) { exists.selesai=item.selesai; }
+      else {
+        const mapel=state.mapel.find(m=>m.nama.toLowerCase()===(item.mapelNama||'').toLowerCase());
+        state.tugas.push({ id:item.id||genId(), judul:item.judul, mapelId:mapel?mapel.id:(state.mapel[0]?.id||''), guru:item.guru||'', deadline:item.deadline||'', tipe:item.tipe||'pr', catatan:item.catatan||'', prioritas:'sedang', subtasks:[], selesai:item.selesai||false, createdAt:item.createdAt||Date.now() });
+        added++;
+      }
+    });
+    if (added>0 || !silent) { saveState(); renderTugas(); }
+    if (!silent) {
+      renderSheetsPreview(data);
+      showSheetsStatus(`✅ ${data.length} tugas dimuat (${added} baru ditambahkan)`,'success','syncStatus');
+    }
+  } catch(e) { if(!silent) showSheetsStatus('❌ Gagal: '+e.message,'error','syncStatus'); }
 }
 
 async function pushToSheets(silent=false) {
