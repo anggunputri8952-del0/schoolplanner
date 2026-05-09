@@ -58,6 +58,11 @@ function saveState() {
     window._fbSaveTimer = setTimeout(() => { window._fb.saveToCloud(state); setSyncStatus('synced'); }, 800);
     setSyncStatus('saving');
   }
+  // Auto-push ke Sheets jika terhubung (debounce 1.5s)
+  if (state.sheets.connected && state.sheets.scriptUrl) {
+    clearTimeout(window._sheetsSaveTimer);
+    window._sheetsSaveTimer = setTimeout(() => pushToSheets(true), 1500);
+  }
 }
 
 function setSyncStatus(status) {
@@ -822,7 +827,9 @@ async function connectScript() {
       state.sheets = { ...state.sheets, scriptUrl:url, connected:true };
       saveState(); updateConnectionUI(true);
       showSheetsStatus('✅ '+json.message,'success');
-      showToast('Berhasil terhubung ke Apps Script!','success');
+      showToast('Berhasil terhubung!','success');
+      // Langsung load data dari spreadsheet
+      await pullFromSheets(false);
     } else { showSheetsStatus('❌ Script error: '+json.error,'error'); }
   } catch(e) { showSheetsStatus('❌ Gagal terhubung. Pastikan URL benar dan script sudah di-deploy dengan akses "Anyone".','error'); }
   finally { if (btn) { btn.disabled=false; btn.textContent='🔌 Hubungkan'; } }
@@ -872,18 +879,20 @@ async function pullFromSheets(silent=false) {
   } catch(e) { if(!silent)showSheetsStatus('❌ Gagal: '+e.message,'error','syncStatus'); }
 }
 
-async function pushToSheets() {
+async function pushToSheets(silent=false) {
   const url=state.sheets.scriptUrl;
-  if (!state.tugas.length) { showSheetsStatus('⚠️ Tidak ada tugas untuk di-push','error','syncStatus'); return; }
-  if (!confirm(`Push ${state.tugas.length} tugas ke spreadsheet? Data lama akan diganti.`)) return;
-  showSheetsStatus('⬆️ Mengirim data...','info','syncStatus');
+  if (!url || !state.sheets.connected) return;
+  if (!state.tugas.length) { if(!silent) showSheetsStatus('⚠️ Tidak ada tugas untuk di-push','error','syncStatus'); return; }
+  if (!silent) showSheetsStatus('⬆️ Mengirim data...','info','syncStatus');
   try {
     const payload=state.tugas.map(t=>{ const mapel=state.mapel.find(m=>m.id===t.mapelId); return {...t,mapelNama:mapel?mapel.nama:''}; });
     const res=await fetch(url,{method:'POST',body:JSON.stringify({action:'syncTugas',data:payload})});
     const json=await res.json(); if(!json.ok)throw new Error(json.error);
-    showSheetsStatus(`✅ ${state.tugas.length} tugas berhasil dikirim!`,'success','syncStatus');
-    showToast('Push ke Sheets berhasil!','success');
-  } catch(e) { showSheetsStatus('❌ Gagal push: '+e.message,'error','syncStatus'); }
+    if (!silent) {
+      showSheetsStatus(`✅ ${state.tugas.length} tugas berhasil dikirim!`,'success','syncStatus');
+      showToast('Push ke Sheets berhasil!','success');
+    }
+  } catch(e) { if(!silent) showSheetsStatus('❌ Gagal push: '+e.message,'error','syncStatus'); }
 }
 
 async function syncStatusToSheets(id, selesai) {
