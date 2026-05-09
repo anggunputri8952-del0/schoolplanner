@@ -823,3 +823,112 @@
   </div>
 
 </main>
+
+<!-- ===== MODAL: TAMBAH/EDIT JADWAL ===== -->
+<div class="modal-overlay" id="modalMapel" role="dialog" aria-modal="true" aria-labelledby="modalMapelTitle">
+  <div class="modal">
+    <div class="modal-handle md:hidden"></div>
+    <div class="modal-header">
+      <h2 class="text-base font-semibold" id="modalMapelTitle">Tambah Mapel</h2>
+      <button class="modal-close" id="closeModalMapel" aria-label="Tutup">✕</button>
+    </div>
+    <div class="modal-body space-y-4">
+      <div class="form-group">
+        <label class="form-label" for="mapelSelect">Mata Pelajaran</label>
+        <select id="mapelSelect" class="input-field"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="hariSelect">Hari</label>
+        <select id="hariSelect" class="input-field">
+          <option value="senin">Senin</option><option value="selasa">Selasa</option>
+          <option value="rabu">Rabu</option><option value="kamis">Kamis</option>
+          <option value="jumat">Jumat</option>
+        </select>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="form-group"><label class="form-label" for="jamMulaiMapel">Jam Mulai</label><input type="time" id="jamMulaiMapel" class="input-field"/></div>
+        <div class="form-group"><label class="form-label" for="jamSelesaiMapel">Jam Selesai</label><input type="time" id="jamSelesaiMapel" class="input-field"/></div>
+      </div>
+      <div class="form-group"><label class="form-label" for="namaGuru">Nama Guru</label><input type="text" id="namaGuru" placeholder="Contoh: Bu Sari" class="input-field"/></div>
+      <div class="form-group"><label class="form-label" for="ruangan">Ruangan (opsional)</label><input type="text" id="ruangan" placeholder="Contoh: Kelas 10A" class="input-field"/></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" id="cancelModalMapel">Batal</button>
+      <button class="btn-primary" id="saveModalMapel">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: TAMBAH/EDIT TUGAS ===== -->
+<div class="modal-overlay" id="modalTugas" role="dialog" aria-modal="true" aria-labelledby="modalTugasTitle">
+  <div class="modal">
+    <div class="modal-handle md:hidden"></div>
+    <div class="modal-header">
+      <h2 class="text-base font-semibold" id="modalTugasTitle">Tambah Tugas</h2>
+      <button class="modal-close" id="closeModalTugas" aria-label="Tutup">✕</button>
+    </div>
+    <div class="modal-body space-y-4">
+      <div class="form-group"><label class="form-label" for="judulTugas">Judul Tugas</label><input type="text" id="judulTugas" placeholder="Contoh: Latihan Soal Bab 3" class="input-field"/></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="form-group"><label class="form-label" for="mapelTugas">Mata Pelajaran</label><select id="mapelTugas" class="input-field"></select></div>
+        <div class="form-group"><label class="form-label" for="tipeTugas">Tipe</label>
+          <select id="tipeTugas" class="input-field">
+            <option value="pr">PR</option><option value="tugas">Tugas Kelas</option>
+            <option value="ulangan">Ulangan/Ujian</option><option value="proyek">Proyek</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="form-group"><label class="form-label" for="prioritasTugas">Prioritas</label>
+          <select id="prioritasTugas" class="input-field">
+            <option value="tinggi">🔴 Tinggi</option>
+            <option value="sedang" selected>🟡 Sedang</option>
+            <option value="rendah">🟢 Rendah</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label" for="deadlineTugas">Deadline</label><input type="date" id="deadlineTugas" class="input-field"/></div>
+      </div>
+      <div class="form-group"><label class="form-label" for="guruTugas">Nama Guru</label><input type="text" id="guruTugas" placeholder="Bu Sari" class="input-field"/></div>
+      <div class="form-group"><label class="form-label" for="catatanTugas">Catatan (opsional)</label><textarea id="catatanTugas" placeholder="Tambahkan catatan..." class="input-field" rows="2" style="resize:vertical"></textarea></div>
+      <!-- Subtasks -->
+      <div class="form-group">
+        <div class="flex items-center justify-between mb-2">
+          <label class="form-label mb-0">Subtask (opsional)</label>
+          <button type="button" id="btnAddSubtask" class="btn-add-subtask">+ Tambah</button>
+        </div>
+        <div id="subtaskContainer" class="space-y-2"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" id="cancelModalTugas">Batal</button>
+      <button class="btn-primary" id="saveModalTugas">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: TAMBAH MAPEL BARU ===== -->
+<div class="modal-overlay" id="modalMapelBaru" role="dialog" aria-modal="true">
+  <div class="modal modal-sm">
+    <div class="modal-handle md:hidden"></div>
+    <div class="modal-header">
+      <h2 class="text-base font-semibold">Tambah Mata Pelajaran</h2>
+      <button class="modal-close" id="closeModalMapelBaru" aria-label="Tutup">✕</button>
+    </div>
+    <div class="modal-body space-y-4">
+      <div class="form-group"><label class="form-label" for="namaMapelBaru">Nama Mata Pelajaran</label><input type="text" id="namaMapelBaru" placeholder="Contoh: Matematika" class="input-field"/></div>
+      <div class="form-group"><label class="form-label">Warna</label><div id="colorOptions" class="flex flex-wrap gap-2 mt-2"></div></div>
+      <div class="form-group"><label class="form-label" for="ikonMapel">Ikon (emoji)</label><input type="text" id="ikonMapel" placeholder="📐" class="input-field" maxlength="2"/></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" id="cancelModalMapelBaru">Batal</button>
+      <button class="btn-primary" id="saveModalMapelBaru">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast-base" role="alert" aria-live="polite"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
