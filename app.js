@@ -555,3 +555,129 @@ function saveModalMapelBaru() {
   saveState(); renderSettings(); closeModalMapelBaru(); clearDraft('mapelBaru');
   showToast('Mata pelajaran ditambahkan!','success');
 }
+
+// ===== OVERVIEW =====
+function renderOverview() {
+  const container = document.getElementById('overviewContent');
+  if (!container) return;
+  const days = ['senin','selasa','rabu','kamis','jumat'];
+  const dayLabel = { senin:'Senin',selasa:'Selasa',rabu:'Rabu',kamis:'Kamis',jumat:'Jumat' };
+  const now = new Date(); now.setHours(0,0,0,0);
+
+  // Stats
+  const total=state.tugas.length, selesai=state.tugas.filter(t=>t.selesai).length;
+  const pct = total>0 ? Math.round(selesai/total*100) : 0;
+  const upcoming = state.tugas.filter(t => {
+    if (t.selesai||!t.deadline) return false;
+    const p=t.deadline.split('-').map(Number);
+    return (new Date(p[0],p[1]-1,p[2])-now)/86400000 <= 7;
+  });
+
+  let html = `<div class="overview-stats">
+    <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-label">Total Tugas</div></div>
+    <div class="stat-card"><div class="stat-num">${selesai}</div><div class="stat-label">Selesai</div></div>
+    <div class="stat-card"><div class="stat-num">${pct}%</div><div class="stat-label">Progress</div></div>
+    <div class="stat-card"><div class="stat-num">${upcoming.length}</div><div class="stat-label">Mendatang</div></div>
+  </div>`;
+
+  // Week schedule
+  html += '<div class="overview-section-title">🗓️ Jadwal Minggu Ini</div><div class="overview-week">';
+  days.forEach(d => {
+    const jadwal = state.jadwal[d] || [];
+    html += `<div class="overview-day"><div class="overview-day-label">${dayLabel[d]}</div>`;
+    if (jadwal.length === 0) { html += '<div class="overview-empty">—</div>'; }
+    else {
+      jadwal.forEach(j => {
+        const mapel = state.mapel.find(m => m.id === j.mapelId);
+        if (!mapel) return;
+        html += `<div class="overview-slot" style="background:${mapel.warna}22;border-left:3px solid ${mapel.warna}" title="${sanitize(mapel.nama)} ${j.jamMulai}-${j.jamSelesai}"><span>${sanitize(mapel.ikon)}</span><span class="overview-slot-name">${sanitize(mapel.nama)}</span><span class="overview-slot-time">${j.jamMulai}</span></div>`;
+      });
+    }
+    html += '</div>';
+  });
+  html += '</div>';
+
+  // Upcoming tasks
+  html += '<div class="overview-section-title">📅 Tugas 7 Hari ke Depan</div>';
+  const upcomingSorted = upcoming.map(t => {
+    const p=t.deadline.split('-').map(Number);
+    return { ...t, _diff: Math.ceil((new Date(p[0],p[1]-1,p[2])-now)/86400000) };
+  }).sort((a,b) => a._diff-b._diff);
+
+  if (upcomingSorted.length === 0) {
+    html += '<div class="overview-no-task">Tidak ada tugas mendatang 🎉</div>';
+  } else {
+    html += '<div class="overview-task-list">';
+    upcomingSorted.forEach(t => {
+      const mapel = state.mapel.find(m => m.id === t.mapelId);
+      const ds = getDeadlineStatus(t.deadline);
+      html += `<div class="overview-task-item"><span class="overview-task-mapel" style="color:${mapel?.warna||'var(--text2)'}">${sanitize(mapel?.ikon||'📝')}</span><span class="overview-task-judul">${sanitize(t.judul)}</span><span class="deadline-badge ${ds.cls}">${ds.label}</span></div>`;
+    });
+    html += '</div>';
+  }
+  container.innerHTML = html;
+}
+
+// ===== POMODORO =====
+let pomState = { mode:'work', timeLeft:0, running:false, sessions:0 };
+let pomInterval = null;
+
+function initPomodoroUI() {
+  const { work, shortBreak, longBreak } = state.pomodoro;
+  document.getElementById('pomWork').value = work;
+  document.getElementById('pomShort').value = shortBreak;
+  document.getElementById('pomLong').value = longBreak;
+  if (!pomState.running) { pomState.timeLeft = work*60; pomState.mode = 'work'; }
+  updatePomDisplay();
+}
+
+function updatePomDisplay() {
+  const m = Math.floor(pomState.timeLeft/60).toString().padStart(2,'0');
+  const s = (pomState.timeLeft%60).toString().padStart(2,'0');
+  const el = document.getElementById('pomTimer');
+  if (el) el.textContent = m+':'+s;
+  const modeNames = { work:'🍅 Fokus', shortBreak:'☕ Istirahat Pendek', longBreak:'🛌 Istirahat Panjang' };
+  const label = document.getElementById('pomModeLabel');
+  if (label) label.textContent = modeNames[pomState.mode]||'';
+  const startBtn = document.getElementById('pomStart');
+  if (startBtn) startBtn.textContent = pomState.running ? '⏸ Pause' : '▶ Mulai';
+  const sessEl = document.getElementById('pomSessions');
+  if (sessEl) sessEl.textContent = 'Sesi: '+pomState.sessions;
+}
+
+function pomTick() {
+  if (pomState.timeLeft > 0) { pomState.timeLeft--; updatePomDisplay(); return; }
+  clearInterval(pomInterval); pomInterval = null; pomState.running = false;
+  if (pomState.mode === 'work') {
+    pomState.sessions++;
+    pomState.mode = (pomState.sessions % 4 === 0) ? 'longBreak' : 'shortBreak';
+    pomState.timeLeft = (pomState.mode==='longBreak' ? state.pomodoro.longBreak : state.pomodoro.shortBreak) * 60;
+    showToast('Waktu istirahat! 🎉','success');
+  } else {
+    pomState.mode = 'work'; pomState.timeLeft = state.pomodoro.work * 60;
+    showToast('Waktunya fokus! 🍅','default');
+  }
+  updatePomDisplay(); startPomodoro();
+}
+
+function startPomodoro() {
+  if (pomState.running) { clearInterval(pomInterval); pomInterval=null; pomState.running=false; }
+  else { pomState.running=true; pomInterval=setInterval(pomTick,1000); }
+  updatePomDisplay();
+}
+
+function resetPomodoro() {
+  clearInterval(pomInterval); pomInterval=null;
+  pomState = { mode:'work', timeLeft:state.pomodoro.work*60, running:false, sessions:0 };
+  updatePomDisplay();
+}
+
+function savePomSettings() {
+  const w=parseInt(document.getElementById('pomWork').value)||25;
+  const sb=parseInt(document.getElementById('pomShort').value)||5;
+  const lb=parseInt(document.getElementById('pomLong').value)||15;
+  state.pomodoro = { work:w, shortBreak:sb, longBreak:lb };
+  saveState();
+  if (!pomState.running) { pomState.timeLeft=w*60; pomState.mode='work'; updatePomDisplay(); }
+  showToast('Pengaturan Pomodoro disimpan!','success');
+}
