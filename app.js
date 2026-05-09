@@ -2231,3 +2231,116 @@ function handleSpreadsheetUrlInput(val) {
   const hint = document.getElementById('spreadsheetIdHint');
   if (hint) hint.textContent = id !== val.trim() ? `ID terdeteksi: ${id}` : '';
 }
+
+// ===== INIT =====
+function init() {
+  initNav();
+  initDate();
+  initDayTabs();
+  initFilterBar();
+  renderJadwal();
+  renderTugas();
+  renderSettings();
+  initSheets();
+
+  // Jadwal buttons
+  ['btnTambahMapel','btnTambahMapelDesktop'].forEach(id => {
+    document.getElementById(id)?.addEventListener('click', () => openModalMapel());
+  });
+  document.getElementById('closeModalMapel')?.addEventListener('click', closeModalMapel);
+  document.getElementById('cancelModalMapel')?.addEventListener('click', closeModalMapel);
+  document.getElementById('saveModalMapel')?.addEventListener('click', saveModalMapel);
+  document.getElementById('modalMapel')?.addEventListener('click', e => { if (e.target === e.currentTarget) closeModalMapel(); });
+
+  // Tugas buttons
+  ['btnTambahTugas','btnTambahTugasDesktop'].forEach(id => {
+    document.getElementById(id)?.addEventListener('click', () => openModalTugas());
+  });
+  document.getElementById('closeModalTugas')?.addEventListener('click', closeModalTugas);
+  document.getElementById('cancelModalTugas')?.addEventListener('click', closeModalTugas);
+  document.getElementById('saveModalTugas')?.addEventListener('click', saveModalTugas);
+  document.getElementById('modalTugas')?.addEventListener('click', e => { if (e.target === e.currentTarget) closeModalTugas(); });
+  document.getElementById('btnAddSubtask')?.addEventListener('click', addSubtask);
+
+  // Mapel baru
+  document.getElementById('btnTambahMapelSettings')?.addEventListener('click', openModalMapelBaru);
+  document.getElementById('closeModalMapelBaru')?.addEventListener('click', closeModalMapelBaru);
+  document.getElementById('cancelModalMapelBaru')?.addEventListener('click', closeModalMapelBaru);
+  document.getElementById('saveModalMapelBaru')?.addEventListener('click', saveModalMapelBaru);
+  document.getElementById('modalMapelBaru')?.addEventListener('click', e => { if (e.target === e.currentTarget) closeModalMapelBaru(); });
+
+  // Settings jam
+  document.getElementById('btnSaveJam')?.addEventListener('click', () => {
+    const jm = document.getElementById('jamMulai').value;
+    const js = document.getElementById('jamSelesai').value;
+    const ds = parseInt(document.getElementById('durasiSlot').value) || 45;
+    if (timeToMinutes(jm) >= timeToMinutes(js)) { showToast('Jam mulai harus sebelum jam selesai!','error'); return; }
+    if (ds < 5 || ds > 240) { showToast('Durasi slot harus antara 5-240 menit!','error'); return; }
+    state.settings = { ...state.settings, jamMulai:jm, jamSelesai:js, durasiSlot:ds };
+    saveState(); renderJadwal();
+    showToast('Pengaturan jam disimpan!','success');
+  });
+
+  // Reset
+  document.getElementById('btnResetData')?.addEventListener('click', () => {
+    if (!confirm('Yakin ingin menghapus SEMUA data? Tindakan ini tidak bisa dibatalkan!')) return;
+    localStorage.removeItem('schoolplanner');
+    state = loadState();
+    renderJadwal(); renderTugas(); renderSettings(); initSheets();
+    showToast('Semua data telah direset','success');
+  });
+
+  // Sheets
+  document.getElementById('btnConnectScript')?.addEventListener('click', connectScript);
+  document.getElementById('btnPingScript')?.addEventListener('click', pingScript);
+  document.getElementById('btnDisconnect')?.addEventListener('click', disconnectScript);
+  document.getElementById('btnPullTugas')?.addEventListener('click', () => pullFromSheets(false));
+  document.getElementById('btnPushTugas')?.addEventListener('click', pushToSheets);
+  document.getElementById('btnImportSheets')?.addEventListener('click', importFromSheets);
+  document.getElementById('btnDownloadTemplate')?.addEventListener('click', downloadTemplate);
+  document.getElementById('btnCopyScript')?.addEventListener('click', copyScriptCode);
+
+  const scriptUrlEl = document.getElementById('scriptUrl');
+  if (scriptUrlEl) {
+    scriptUrlEl.addEventListener('input', () => { state.sheets.scriptUrl = scriptUrlEl.value.trim(); saveState(); });
+    scriptUrlEl.addEventListener('keydown', e => { if (e.key === 'Enter') connectScript(); });
+  }
+
+  // Pomodoro
+  document.getElementById('pomStart')?.addEventListener('click', startPomodoro);
+  document.getElementById('pomReset')?.addEventListener('click', resetPomodoro);
+  document.getElementById('pomSave')?.addEventListener('click', savePomSettings);
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeModalMapel(); closeModalTugas(); closeModalMapelBaru(); }
+  });
+
+  // Firebase auth handlers
+  window._onCloudLogin = (cloudState) => {
+    if (!cloudState) return;
+    // Merge: cloud wins but keep local sheets config if cloud doesn't have it
+    state = { ...loadState(), ...cloudState, sheets: cloudState.sheets || state.sheets };
+    localStorage.setItem('schoolplanner', JSON.stringify(state));
+    renderJadwal(); renderTugas(); renderSettings(); initSheets();
+    showToast('Data berhasil dimuat dari cloud ☁️','success');
+    setSyncStatus('synced');
+  };
+
+  window._onCloudSync = (newState) => {
+    if (!newState) return;
+    if (JSON.stringify(state) === JSON.stringify(newState)) return;
+    state = { ...state, ...newState };
+    localStorage.setItem('schoolplanner', JSON.stringify(state));
+    renderJadwal(); renderTugas(); renderSettings(); initSheets();
+    setSyncStatus('synced');
+  };
+
+  // Auth buttons
+  document.getElementById('btnLogin')?.addEventListener('click', () => window._fb?.login());
+  document.getElementById('btnLogout')?.addEventListener('click', () => { window._fb?.logout(); setSyncStatus('local'); showToast('Logout berhasil','default'); });
+  document.getElementById('btnLoginMobile')?.addEventListener('click', () => window._fb?.login());
+  document.getElementById('btnLogoutMobile')?.addEventListener('click', () => { window._fb?.logout(); setSyncStatus('local'); showToast('Logout berhasil','default'); });
+}
+
+document.addEventListener('DOMContentLoaded', init);
