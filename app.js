@@ -770,6 +770,10 @@ function initSheets() {
   const el = document.getElementById('scriptUrl');
   if (el) el.value = state.sheets.scriptUrl || '';
   updateConnectionUI(state.sheets.connected);
+  // Auto-load preview jika sudah terhubung
+  if (state.sheets.connected && state.sheets.scriptUrl) {
+    pullFromSheets(true);
+  }
 }
 
 function updateConnectionUI(connected) {
