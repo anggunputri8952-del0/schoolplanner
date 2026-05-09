@@ -31,6 +31,14 @@ button { font-family: inherit; }
   -webkit-backdrop-filter: blur(12px);
 }
 
+/* Beri ruang di bawah sticky header untuk konten page */
+@media (max-width: 767px) {
+  .page.active > div:not(.page-header-mobile):first-of-type,
+  .page.active > .px-4:first-of-type {
+    padding-top: 12px;
+  }
+}
+
 /* ===== BOTTOM NAV ===== */
 .bottom-nav {
   background: rgba(250,237,205,0.98);
