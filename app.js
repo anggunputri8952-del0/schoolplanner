@@ -393,3 +393,165 @@ function initFilterBar() {
     });
   });
 }
+
+// ===== MODAL TUGAS =====
+const TUGAS_FIELDS = ['judulTugas','mapelTugas','guruTugas','deadlineTugas','tipeTugas','prioritasTugas','catatanTugas'];
+let subtaskList = [];
+
+function openModalTugas(editId = null) {
+  editingTugasId = editId;
+  const modal = document.getElementById('modalTugas');
+  document.getElementById('modalTugasTitle').textContent = editId ? 'Edit Tugas' : 'Tambah Tugas';
+  const sel = document.getElementById('mapelTugas');
+  sel.innerHTML = state.mapel.map(m => `<option value="${sanitize(m.id)}">${sanitize(m.ikon)} ${sanitize(m.nama)}</option>`).join('');
+  subtaskList = [];
+
+  if (editId) {
+    clearDraft('tugas');
+    const t = state.tugas.find(t => t.id === editId);
+    if (t) {
+      document.getElementById('judulTugas').value = t.judul;
+      sel.value = t.mapelId;
+      document.getElementById('guruTugas').value = t.guru || '';
+      document.getElementById('deadlineTugas').value = t.deadline || '';
+      document.getElementById('tipeTugas').value = t.tipe || 'pr';
+      document.getElementById('prioritasTugas').value = t.prioritas || 'sedang';
+      document.getElementById('catatanTugas').value = t.catatan || '';
+      subtaskList = (t.subtasks||[]).map(s => ({...s}));
+    }
+  } else {
+    const draft = loadDraft('tugas');
+    if (draft) { TUGAS_FIELDS.forEach(id => { const el=document.getElementById(id); if(el&&draft[id]!==undefined)el.value=draft[id]; }); }
+    else {
+      document.getElementById('judulTugas').value = '';
+      document.getElementById('guruTugas').value = '';
+      document.getElementById('deadlineTugas').value = '';
+      document.getElementById('tipeTugas').value = 'pr';
+      document.getElementById('prioritasTugas').value = 'sedang';
+      document.getElementById('catatanTugas').value = '';
+    }
+    attachAutosave('tugas', TUGAS_FIELDS);
+  }
+  renderSubtaskList();
+  modal.classList.add('open');
+  setTimeout(() => document.getElementById('judulTugas')?.focus(), 100);
+}
+
+function closeModalTugas() { document.getElementById('modalTugas').classList.remove('open'); editingTugasId = null; subtaskList = []; }
+
+function saveModalTugas() {
+  const judul = document.getElementById('judulTugas').value.trim();
+  const mapelId = document.getElementById('mapelTugas').value;
+  const guru = document.getElementById('guruTugas').value.trim();
+  const deadline = document.getElementById('deadlineTugas').value;
+  const tipe = document.getElementById('tipeTugas').value;
+  const prioritas = document.getElementById('prioritasTugas').value;
+  const catatan = document.getElementById('catatanTugas').value.trim();
+  if (!judul) { showToast('Judul tugas wajib diisi!','error'); return; }
+
+  const subtasks = subtaskList.filter(s => s.text.trim()).map(s => ({ id:s.id||genId(), text:s.text.trim(), done:s.done||false }));
+
+  if (editingTugasId) {
+    const idx = state.tugas.findIndex(t => t.id === editingTugasId);
+    if (idx !== -1) state.tugas[idx] = { ...state.tugas[idx], judul, mapelId, guru, deadline, tipe, prioritas, catatan, subtasks };
+  } else {
+    state.tugas.push({ id:genId(), judul, mapelId, guru, deadline, tipe, prioritas, catatan, subtasks, selesai:false, createdAt:Date.now() });
+  }
+  saveState(); renderTugas(); closeModalTugas(); clearDraft('tugas');
+  showToast('Tugas disimpan!','success');
+}
+
+function renderSubtaskList() {
+  const container = document.getElementById('subtaskContainer');
+  if (!container) return;
+  container.innerHTML = '';
+  subtaskList.forEach((s, i) => {
+    const row = document.createElement('div'); row.className = 'subtask-row';
+    const cb = document.createElement('input'); cb.type='checkbox'; cb.checked=s.done;
+    cb.addEventListener('change', () => { subtaskList[i].done = cb.checked; });
+    const inp = document.createElement('input'); inp.type='text'; inp.className='subtask-input'; inp.value=s.text; inp.placeholder='Subtask...';
+    inp.addEventListener('input', () => { subtaskList[i].text = inp.value; });
+    const del = document.createElement('button'); del.className='subtask-del'; del.textContent='✕'; del.type='button';
+    del.addEventListener('click', () => { subtaskList.splice(i,1); renderSubtaskList(); });
+    row.appendChild(cb); row.appendChild(inp); row.appendChild(del);
+    container.appendChild(row);
+  });
+}
+
+function addSubtask() {
+  subtaskList.push({ id:genId(), text:'', done:false });
+  renderSubtaskList();
+  const inputs = document.querySelectorAll('.subtask-input');
+  if (inputs.length) inputs[inputs.length-1].focus();
+}
+
+// ===== SETTINGS =====
+function renderSettings() {
+  const { jamMulai, jamSelesai, durasiSlot } = state.settings;
+  const jm=document.getElementById('jamMulai'), js=document.getElementById('jamSelesai'), ds=document.getElementById('durasiSlot');
+  if (jm) jm.value=jamMulai; if (js) js.value=jamSelesai; if (ds) ds.value=durasiSlot;
+
+  const list = document.getElementById('mapelList');
+  if (!list) return;
+  list.innerHTML = '';
+  state.mapel.forEach(m => {
+    const row = document.createElement('div'); row.className = 'mapel-item';
+    row.innerHTML = `<div class="mapel-color" style="background:${sanitize(m.warna)}"></div><span class="mapel-icon">${sanitize(m.ikon)}</span><span class="mapel-name">${sanitize(m.nama)}</span>`;
+    const del = document.createElement('button'); del.className='btn-icon danger'; del.title='Hapus'; del.textContent='🗑️';
+    del.addEventListener('click', () => {
+      if (!confirm('Hapus mata pelajaran ini? Jadwal terkait juga akan terhapus.')) return;
+      state.mapel = state.mapel.filter(x => x.id !== m.id);
+      Object.keys(state.jadwal).forEach(day => { state.jadwal[day]=(state.jadwal[day]||[]).filter(j=>j.mapelId!==m.id); });
+      const fallback = state.mapel[0]?.id || '';
+      state.tugas.forEach(t => { if (t.mapelId === m.id) t.mapelId = fallback; });
+      saveState(); renderSettings(); renderJadwal(); renderTugas();
+      showToast('Mata pelajaran dihapus','success');
+    });
+    row.appendChild(del); list.appendChild(row);
+  });
+}
+
+// ===== MODAL MAPEL BARU =====
+const MAPEL_BARU_FIELDS = ['namaMapelBaru','ikonMapel'];
+
+function initColorPicker() {
+  const container = document.getElementById('colorOptions');
+  if (!container) return;
+  container.innerHTML = COLORS.map(c => `<div class="color-option ${c===selectedColor?'selected':''}" style="background:${c}" data-color="${c}"></div>`).join('');
+  container.querySelectorAll('.color-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      selectedColor = opt.dataset.color;
+      container.querySelectorAll('.color-option').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+    });
+  });
+}
+
+function openModalMapelBaru() {
+  const draft = loadDraft('mapelBaru');
+  if (draft) {
+    document.getElementById('namaMapelBaru').value = draft.namaMapelBaru||'';
+    document.getElementById('ikonMapel').value = draft.ikonMapel||'';
+    selectedColor = draft.selectedColor || COLORS[0];
+  } else {
+    selectedColor = COLORS[0];
+    document.getElementById('namaMapelBaru').value = '';
+    document.getElementById('ikonMapel').value = '';
+  }
+  initColorPicker();
+  attachAutosave('mapelBaru', MAPEL_BARU_FIELDS);
+  document.getElementById('modalMapelBaru').classList.add('open');
+  setTimeout(() => document.getElementById('namaMapelBaru')?.focus(), 100);
+}
+
+function closeModalMapelBaru() { document.getElementById('modalMapelBaru').classList.remove('open'); }
+
+function saveModalMapelBaru() {
+  const nama = document.getElementById('namaMapelBaru').value.trim();
+  const ikon = document.getElementById('ikonMapel').value.trim() || '📚';
+  if (!nama) { showToast('Nama mapel wajib diisi!','error'); return; }
+  if (state.mapel.some(m => m.nama.toLowerCase() === nama.toLowerCase())) { showToast('Mata pelajaran sudah ada!','error'); return; }
+  state.mapel.push({ id:genId(), nama, warna:selectedColor, ikon });
+  saveState(); renderSettings(); closeModalMapelBaru(); clearDraft('mapelBaru');
+  showToast('Mata pelajaran ditambahkan!','success');
+}
