@@ -1997,3 +1997,237 @@ function getJadwalData() {
   });
   return result;
 }`;
+
+// ===== SHEETS UI =====
+function initSheets() {
+  const { scriptUrl, connected } = state.sheets;
+  const el = document.getElementById('scriptUrl');
+  if (el) el.value = scriptUrl || '';
+  updateConnectionUI(connected);
+}
+
+function updateConnectionUI(connected) {
+  ['connectionBadge','connectionBadgeDesktop'].forEach(id => {
+    const b = document.getElementById(id);
+    if (b) b.className = 'conn-badge' + (connected ? ' connected' : '');
+  });
+  ['connectionLabel','connectionLabelDesktop'].forEach(id => {
+    const l = document.getElementById(id);
+    if (l) l.textContent = connected ? 'Terhubung ✅' : 'Belum terhubung';
+  });
+  const pingBtn       = document.getElementById('btnPingScript');
+  const disconnectBtn = document.getElementById('btnDisconnect');
+  const syncCard      = document.getElementById('syncCard');
+  if (pingBtn)       pingBtn.disabled       = !connected;
+  if (disconnectBtn) disconnectBtn.disabled = !connected;
+  if (syncCard) {
+    syncCard.style.opacity       = connected ? '1' : '0.4';
+    syncCard.style.pointerEvents = connected ? 'all' : 'none';
+  }
+  clearInterval(window._autoRefreshTimer);
+  if (connected) {
+    let countdown = 30;
+    const badge = document.getElementById('autoRefreshBadge');
+    const tick = () => {
+      if (badge) badge.textContent = `Auto-refresh: ${countdown}s`;
+      countdown--;
+      if (countdown < 0) { countdown = 30; pullFromSheets(true); }
+    };
+    tick();
+    window._autoRefreshTimer = setInterval(tick, 1000);
+  } else {
+    const badge = document.getElementById('autoRefreshBadge');
+    if (badge) badge.textContent = 'Auto-refresh: off';
+  }
+}
+
+function showSheetsStatus(msg, type, elId = 'sheetsStatus') {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  el.textContent = msg;
+  el.className = msg ? 'status-msg ' + type : 'status-msg';
+}
+
+// Helper: extract Spreadsheet ID from URL or raw ID
+function extractSpreadsheetId(input) {
+  const match = input.match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);
+  return match ? match[1] : input.trim();
+}
+
+async function connectScript() {
+  const url = document.getElementById('scriptUrl').value.trim();
+  if (!url) { showSheetsStatus('❌ Masukkan URL Web App terlebih dahulu','error'); return; }
+  if (!url.includes('script.google.com/macros')) {
+    showSheetsStatus('❌ URL tidak valid. Harus berupa URL Apps Script Web App','error'); return;
+  }
+  const btn = document.getElementById('btnConnectScript');
+  if (btn) { btn.disabled = true; btn.textContent = '🔄 Menghubungkan...'; }
+  showSheetsStatus('🔄 Menghubungkan...','info');
+  try {
+    const res  = await fetch(url + '?action=ping');
+    const json = await res.json();
+    if (json.ok) {
+      state.sheets = { ...state.sheets, scriptUrl:url, connected:true };
+      saveState();
+      updateConnectionUI(true);
+      showSheetsStatus('✅ ' + json.message,'success');
+      showToast('Berhasil terhubung ke Apps Script!','success');
+    } else {
+      showSheetsStatus('❌ Script merespons tapi ada error: ' + json.error,'error');
+    }
+  } catch(e) {
+    showSheetsStatus('❌ Gagal terhubung. Pastikan URL benar dan script sudah di-deploy dengan akses "Anyone".','error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '🔌 Hubungkan'; }
+  }
+}
+
+async function pingScript() {
+  const url = state.sheets.scriptUrl;
+  if (!url) return;
+  showSheetsStatus('🏓 Mengirim ping...','info');
+  try {
+    const res  = await fetch(url + '?action=ping');
+    const json = await res.json();
+    showSheetsStatus(json.ok ? '✅ '+json.message : '❌ '+json.error, json.ok ? 'success' : 'error');
+  } catch(e) {
+    showSheetsStatus('❌ Tidak bisa menjangkau script. Cek koneksi internet.','error');
+  }
+}
+
+function disconnectScript() {
+  if (!confirm('Putuskan koneksi ke Apps Script?')) return;
+  state.sheets = { scriptUrl:'', connected:false };
+  saveState(); updateConnectionUI(false);
+  const el = document.getElementById('scriptUrl');
+  if (el) el.value = '';
+  const preview = document.getElementById('sheetsPreview');
+  if (preview) preview.style.display = 'none';
+  const statusEl = document.getElementById('sheetsStatus');
+  if (statusEl) statusEl.className = 'status-msg';
+  showToast('Koneksi diputus','default');
+}
+
+async function pullFromSheets(silent = false) {
+  const url = state.sheets.scriptUrl;
+  if (!url) return;
+  if (!silent) showSheetsStatus('⬇️ Mengambil data dari spreadsheet...','info','syncStatus');
+  try {
+    const res  = await fetch(url + '?action=getTugas');
+    const json = await res.json();
+    if (!json.ok) throw new Error(json.error);
+    const data = json.data || [];
+    if (data.length === 0) {
+      if (!silent) showSheetsStatus('⚠️ Tidak ada data di spreadsheet','error','syncStatus');
+      return;
+    }
+    if (!silent) {
+      renderSheetsPreview(data);
+      showSheetsStatus(`✅ Berhasil mengambil ${data.length} tugas dari spreadsheet`,'success','syncStatus');
+    } else {
+      let added = 0;
+      data.forEach(item => {
+        if (!item.judul) return;
+        const exists = state.tugas.find(t => t.id === item.id);
+        if (exists) { exists.selesai = item.selesai; }
+        else {
+          const mapel = state.mapel.find(m => m.nama.toLowerCase() === (item.mapelNama||'').toLowerCase());
+          state.tugas.push({ id:item.id||genId(), judul:item.judul, mapelId:mapel?mapel.id:(state.mapel[0]?.id||''), guru:item.guru||'', deadline:item.deadline||'', tipe:item.tipe||'pr', catatan:item.catatan||'', prioritas:'sedang', subtasks:[], selesai:item.selesai||false, createdAt:item.createdAt||Date.now() });
+          added++;
+        }
+      });
+      if (added > 0) { saveState(); renderTugas(); }
+    }
+  } catch(e) {
+    if (!silent) showSheetsStatus('❌ Gagal mengambil data: '+e.message,'error','syncStatus');
+  }
+}
+
+async function pushToSheets() {
+  const url = state.sheets.scriptUrl;
+  if (!state.tugas.length) { showSheetsStatus('⚠️ Tidak ada tugas untuk di-push','error','syncStatus'); return; }
+  if (!confirm(`Push ${state.tugas.length} tugas ke spreadsheet? Data lama di sheet akan diganti.`)) return;
+  showSheetsStatus('⬆️ Mengirim data ke spreadsheet...','info','syncStatus');
+  try {
+    const payload = state.tugas.map(t => {
+      const mapel = state.mapel.find(m => m.id === t.mapelId);
+      return { ...t, mapelNama: mapel ? mapel.nama : '' };
+    });
+    const res  = await fetch(url, { method:'POST', body:JSON.stringify({ action:'syncTugas', data:payload }) });
+    const json = await res.json();
+    if (!json.ok) throw new Error(json.error);
+    showSheetsStatus(`✅ ${state.tugas.length} tugas berhasil dikirim ke spreadsheet!`,'success','syncStatus');
+    showToast('Push ke Sheets berhasil!','success');
+  } catch(e) {
+    showSheetsStatus('❌ Gagal push: '+e.message,'error','syncStatus');
+  }
+}
+
+async function syncStatusToSheets(id, selesai) {
+  if (!state.sheets.connected || !state.sheets.scriptUrl) return;
+  try {
+    await fetch(state.sheets.scriptUrl, { method:'POST', body:JSON.stringify({ action:'updateStatus', id, status:selesai }) });
+  } catch(e) { /* silent */ }
+}
+
+function renderSheetsPreview(data) {
+  const preview = document.getElementById('sheetsPreview');
+  const content = document.getElementById('sheetsPreviewContent');
+  if (!preview || !content) return;
+  preview.style.display = 'block';
+  preview._data = data;
+  const rows = data.slice(0, 10);
+  let html = '<div style="overflow-x:auto"><table class="sheets-table"><thead><tr>';
+  ['Mapel','Judul','Deadline','Guru','Status'].forEach(h => { html += `<th>${h}</th>`; });
+  html += '</tr></thead><tbody>';
+  rows.forEach(r => {
+    html += `<tr><td>${sanitize(r.mapelNama||'-')}</td><td>${sanitize(r.judul||'-')}</td><td>${sanitize(r.deadline||'-')}</td><td>${sanitize(r.guru||'-')}</td><td>${r.selesai?'✅ Selesai':'⏳ Belum'}</td></tr>`;
+  });
+  html += '</tbody></table></div>';
+  if (data.length > 10) html += `<p style="font-size:12px;color:var(--text3);margin-top:8px">...dan ${data.length-10} tugas lainnya</p>`;
+  content.innerHTML = html;
+}
+
+function importFromSheets() {
+  const preview = document.getElementById('sheetsPreview');
+  const data = preview?._data;
+  if (!data) return;
+  let imported = 0;
+  data.forEach(item => {
+    if (!item.judul) return;
+    if (state.tugas.find(t => t.id === item.id)) return; // ID-based dedup only
+    const mapel = state.mapel.find(m => m.nama.toLowerCase() === (item.mapelNama||'').toLowerCase());
+    state.tugas.push({ id:item.id||genId(), judul:item.judul, mapelId:mapel?mapel.id:(state.mapel[0]?.id||''), guru:item.guru||'', deadline:item.deadline||'', tipe:item.tipe||'pr', catatan:item.catatan||'', prioritas:'sedang', subtasks:[], selesai:item.selesai||false, createdAt:item.createdAt||Date.now() });
+    imported++;
+  });
+  saveState(); renderTugas();
+  showToast(`${imported} tugas berhasil diimport!`,'success');
+  showSheetsStatus(`✅ ${imported} tugas diimport ke daftar tugas`,'success','syncStatus');
+}
+
+function downloadTemplate() {
+  const csv = 'ID,Judul,Mata Pelajaran,Guru,Deadline,Tipe,Catatan,Status,Dibuat\n,Latihan Soal Bab 3,Matematika,Bu Sari,2026-05-15,pr,,Belum,\n,Buat Puisi,B. Indonesia,Pak Budi,2026-05-20,pr,,Belum,\n';
+  const blob = new Blob([csv], { type:'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'template_tugas_schoolplanner.csv';
+  a.click();
+}
+
+function copyScriptCode() {
+  navigator.clipboard.writeText(APPS_SCRIPT_CODE).then(() => {
+    showToast('Kode Apps Script berhasil di-copy!','success');
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = APPS_SCRIPT_CODE;
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+    showToast('Kode Apps Script berhasil di-copy!','success');
+  });
+}
+
+// Auto-extract Spreadsheet ID from URL pasted into input
+function handleSpreadsheetUrlInput(val) {
+  const id = extractSpreadsheetId(val);
+  const hint = document.getElementById('spreadsheetIdHint');
+  if (hint) hint.textContent = id !== val.trim() ? `ID terdeteksi: ${id}` : '';
+}
