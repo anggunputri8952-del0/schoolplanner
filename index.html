@@ -65,20 +65,20 @@
         src('authAvatar', user.photoURL||''); show('authAvatar','block');
         text('authName', user.displayName||user.email); show('authName','block');
         show('btnLogin','none'); show('btnLogout','inline-flex');
-        text('authStatus','?? Tersimpan di cloud');
+        text('authStatus','☁️ Tersimpan di cloud');
         document.getElementById('authStatus')?.setAttribute('class','auth-status synced');
         src('authAvatarMobile', user.photoURL||''); show('authAvatarMobile','block');
         show('btnLoginMobile','none'); show('btnLogoutMobile','inline-flex');
-        text('authStatusMobile','?? Cloud');
+        text('authStatusMobile','☁️ Cloud');
         document.getElementById('authStatusMobile')?.setAttribute('class','auth-status synced');
       } else {
         show('authAvatar','none'); show('authName','none');
         show('btnLogin','inline-flex'); show('btnLogout','none');
-        text('authStatus','?? Tersimpan lokal');
+        text('authStatus','💾 Tersimpan lokal');
         document.getElementById('authStatus')?.setAttribute('class','auth-status local');
         show('authAvatarMobile','none');
         show('btnLoginMobile','inline-flex'); show('btnLogoutMobile','none');
-        text('authStatusMobile','?? Lokal');
+        text('authStatusMobile','💾 Lokal');
         document.getElementById('authStatusMobile')?.setAttribute('class','auth-status local');
         window._fb.stopSubscribe();
       }
@@ -139,7 +139,7 @@
         <img id="authAvatar" src="" alt="" class="w-7 h-7 rounded-full object-cover" style="display:none"/>
         <span id="authName" class="text-xs truncate flex-1" style="color:var(--text2);display:none"></span>
       </div>
-      <div id="authStatus" class="auth-status local mb-2">?? Tersimpan lokal</div>
+      <div id="authStatus" class="auth-status local mb-2">💾 Tersimpan lokal</div>
       <button id="btnLogin" class="btn-auth w-full">🔑 Login Google</button>
       <button id="btnLogout" class="btn-auth-out w-full mt-1" style="display:none">Logout</button>
     </div>
@@ -148,7 +148,7 @@
 
 <!-- Mobile Auth Bar -->
 <div class="md:hidden fixed top-0 left-0 right-0 z-40 mobile-auth-bar flex items-center justify-between px-4 py-2">
-  <div id="authStatusMobile" class="auth-status local text-xs">?? Lokal</div>
+  <div id="authStatusMobile" class="auth-status local text-xs">💾 Lokal</div>
   <div class="flex items-center gap-2">
     <img id="authAvatarMobile" src="" alt="" class="w-6 h-6 rounded-full object-cover" style="display:none"/>
     <button id="btnLoginMobile" class="btn-auth-sm">🔑 Login</button>
@@ -163,7 +163,7 @@
   <div class="page active" id="page-jadwal">
     <div class="sticky top-10 z-30 page-header-mobile border-b border-border px-4 py-3 md:hidden">
       <div class="flex items-center justify-between">
-        <h1 class="text-lg font-bold">??? Jadwal Mapel</h1>
+        <h1 class="text-lg font-bold">🗓️ Jadwal Mapel</h1>
         <button id="btnTambahMapel" class="btn-primary-sm">+ Tambah</button>
       </div>
     </div>
@@ -179,7 +179,7 @@
         <button class="day-tab flex-shrink-0" data-day="kamis">Kamis</button>
         <button class="day-tab flex-shrink-0" data-day="jumat">Jumat</button>
       </div>
-      <div id="conflictWarning" class="status-msg error mb-3" style="display:none">?? Ada jadwal yang bentrok!</div>
+      <div id="conflictWarning" class="status-msg error mb-3" style="display:none">⚠️ Ada jadwal yang bentrok!</div>
       <div class="bg-bg2 rounded-2xl border border-border overflow-hidden">
         <div class="flex">
           <div class="w-16 flex-shrink-0 border-r border-border">
@@ -198,7 +198,7 @@
   <div class="page" id="page-tugas">
     <div class="sticky top-10 z-30 page-header-mobile border-b border-border px-4 py-3 md:hidden">
       <div class="flex items-center justify-between">
-        <h1 class="text-lg font-bold">?? Tugas & PR</h1>
+        <h1 class="text-lg font-bold">📝 Tugas & PR</h1>
         <button id="btnTambahTugas" class="btn-primary-sm">+ Tambah</button>
       </div>
     </div>
@@ -272,20 +272,89 @@
   <div class="page" id="page-spreadsheet">
     <div class="sticky top-10 z-30 page-header-mobile border-b border-border px-4 py-3 md:hidden">
       <div class="flex items-center justify-between">
-        <h1 class="text-lg font-bold">?? Google Sheets</h1>
-        <div id="connectionBadge" class="conn-badge">
-          <span class="badge-dot"></span>
-          <span id="connectionLabel" class="text-xs font-medium">Belum terhubung</span>
-        </div>
+        <h1 class="text-lg font-bold">📋 Google Sheets</h1>
+        <div id="connectionBadge" class="conn-badge"><span class="badge-dot"></span><span id="connectionLabel" class="text-xs font-medium">Belum terhubung</span></div>
       </div>
     </div>
     <div class="hidden md:flex items-center justify-between px-8 pt-8 pb-4">
-      <h1 class="text-2xl font-bold">Google Sheets via Apps Script</h1>
-      <div id="connectionBadgeDesktop" class="conn-badge">
-        <span class="badge-dot"></span>
-        <span id="connectionLabelDesktop" class="text-xs font-medium">Belum terhubung</span>
+      <h1 class="text-2xl font-bold">Google Sheets</h1>
+      <div id="connectionBadgeDesktop" class="conn-badge"><span class="badge-dot"></span><span id="connectionLabelDesktop" class="text-xs font-medium">Belum terhubung</span></div>
+    </div>
+    <div class="px-4 md:px-8 pb-4 space-y-4">
+      <!-- Step 1 -->
+      <div class="card">
+        <div class="step-header">
+          <div class="step-num">1</div>
+          <div>
+            <h2 class="text-base font-semibold mb-1">Deploy Google Apps Script</h2>
+            <p class="text-sm" style="color:var(--text2)">Satu kali setup. Kode sudah siap, tinggal deploy.</p>
+          </div>
+        </div>
+        <div class="steps-list mb-4">
+          <div class="step-row"><span class="step-circle">1</span><span>Buka <a href="https://script.google.com" target="_blank" class="link-primary">script.google.com</a> &rarr; klik <strong>New Project</strong></span></div>
+          <div class="step-row"><span class="step-circle">2</span><span>Hapus semua kode, klik tombol <strong>Copy Kode</strong> di bawah lalu paste</span></div>
+          <div class="step-row"><span class="step-circle">3</span><span>Ganti <code class="code-inline">GANTI_DENGAN_SPREADSHEET_ID_KAMU</code> dengan ID spreadsheet kamu <span style="font-size:11px;color:var(--text3)">(dari URL: .../d/<strong>ID_INI</strong>/edit)</span></span></div>
+          <div class="step-row"><span class="step-circle">4</span><span>Klik <strong>Deploy &rarr; New Deployment &rarr; Web App</strong></span></div>
+          <div class="step-row"><span class="step-circle">5</span><span>Set <strong>Execute as: Me</strong> dan <strong>Who has access: Anyone</strong> &rarr; Deploy</span></div>
+          <div class="step-row"><span class="step-circle">6</span><span>Copy URL Web App yang muncul &rarr; paste di Step 2</span></div>
+        </div>
+        <button id="btnCopyScript" class="btn-secondary w-full md:w-auto">📋 Copy Kode Apps Script</button>
+      </div>
+      <!-- Step 2 -->
+      <div class="card">
+        <div class="step-header">
+          <div class="step-num">2</div>
+          <div>
+            <h2 class="text-base font-semibold mb-1">Hubungkan ke SchoolPlanner</h2>
+            <p class="text-sm" style="color:var(--text2)">Paste URL Web App dari Apps Script. Otomatis tersimpan.</p>
+          </div>
+        </div>
+        <div class="form-group mb-4">
+          <label class="form-label">URL Web App (Apps Script)</label>
+          <input type="url" id="scriptUrl" placeholder="https://script.google.com/macros/s/.../exec" class="input-field"/>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button id="btnConnectScript" class="btn-primary flex-1 md:flex-none">🔌 Hubungkan</button>
+          <button id="btnPingScript" class="btn-secondary flex-1 md:flex-none" disabled>🏓 Test Koneksi</button>
+          <button id="btnDisconnect" class="btn-danger-outline" disabled>Putuskan</button>
+        </div>
+        <div id="sheetsStatus" class="status-msg mt-3"></div>
+      </div>
+      <!-- Step 3 -->
+      <div class="card" id="syncCard" style="opacity:0.4;pointer-events:none">
+        <div class="step-header">
+          <div class="step-num">3</div>
+          <div class="flex-1">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <h2 class="text-base font-semibold mb-1">Sinkronisasi Data</h2>
+              <span id="autoRefreshBadge" class="text-xs px-2 py-1 rounded-full" style="background:var(--bg3);color:var(--text3)">Auto-refresh: off</span>
+            </div>
+            <p class="text-sm" style="color:var(--text2)">Tarik data dari spreadsheet atau kirim semua tugas ke spreadsheet.</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+          <div class="sync-box">
+            <button id="btnPullTugas" class="btn-primary w-full mb-2">⬇️ Pull dari Sheets</button>
+            <p class="text-xs" style="color:var(--text3)">Ambil tugas dari spreadsheet &rarr; tambahkan ke app (skip duplikat)</p>
+          </div>
+          <div class="sync-box">
+            <button id="btnPushTugas" class="btn-secondary w-full mb-2">⬆️ Push ke Sheets</button>
+            <p class="text-xs" style="color:var(--text3)">Kirim semua tugas dari app &rarr; tulis ke spreadsheet (overwrite)</p>
+          </div>
+        </div>
+        <div id="syncStatus" class="status-msg"></div>
+      </div>
+      <!-- Preview -->
+      <div class="card" id="sheetsPreview" style="display:none">
+        <h2 class="text-base font-semibold mb-3">📄 Preview Data dari Sheets</h2>
+        <div id="sheetsPreviewContent"></div>
+        <div class="flex flex-wrap gap-2 mt-4">
+          <button id="btnImportSheets" class="btn-primary flex-1 md:flex-none">✅ Import ke Tugas</button>
+          <button id="btnDownloadTemplate" class="btn-secondary flex-1 md:flex-none">⬇️ Download Template CSV</button>
+        </div>
       </div>
     </div>
+  </div>
     <div class="px-4 md:px-8 pb-4 space-y-4">
       <!-- Step 1 -->
       <div class="card">
@@ -303,7 +372,7 @@
           <div class="flex gap-3 text-sm" style="color:var(--text2)"><span>?</span><span>Set <strong>Execute as: Me</strong> dan <strong>Who has access: Anyone</strong> ? Deploy</span></div>
           <div class="flex gap-3 text-sm" style="color:var(--text2)"><span>?</span><span>Copy URL Web App ? paste di Step 2</span></div>
         </div>
-        <button id="btnCopyScript" class="btn-secondary w-full md:w-auto">?? Copy Kode Apps Script</button>
+        <button id="btnCopyScript" class="btn-secondary w-full md:w-auto">📋 Copy Kode Apps Script</button>
       </div>
       <!-- Step 2 -->
       <div class="card">
@@ -319,8 +388,8 @@
           <input type="url" id="scriptUrl" placeholder="https://script.google.com/macros/s/.../exec" class="input-field"/>
         </div>
         <div class="flex flex-wrap gap-2">
-          <button id="btnConnectScript" class="btn-primary flex-1 md:flex-none">?? Hubungkan</button>
-          <button id="btnPingScript" class="btn-secondary flex-1 md:flex-none" disabled>?? Test</button>
+          <button id="btnConnectScript" class="btn-primary flex-1 md:flex-none">🔌 Hubungkan</button>
+          <button id="btnPingScript" class="btn-secondary flex-1 md:flex-none" disabled>🏓 Test</button>
           <button id="btnDisconnect" class="btn-danger-outline ml-auto" disabled>Putuskan</button>
         </div>
         <div id="sheetsStatus" class="status-msg mt-3"></div>
@@ -339,11 +408,11 @@
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div class="rounded-xl border p-4" style="background:var(--bg3);border-color:var(--border)">
-            <button id="btnPullTugas" class="btn-primary w-full mb-2">?? Pull dari Sheets</button>
+            <button id="btnPullTugas" class="btn-primary w-full mb-2">⬇️ Pull dari Sheets</button>
             <p class="text-xs" style="color:var(--text3)">Ambil tugas dari spreadsheet ? tambahkan ke app (skip duplikat)</p>
           </div>
           <div class="rounded-xl border p-4" style="background:var(--bg3);border-color:var(--border)">
-            <button id="btnPushTugas" class="btn-secondary w-full mb-2">?? Push ke Sheets</button>
+            <button id="btnPushTugas" class="btn-secondary w-full mb-2">⬆️ Push ke Sheets</button>
             <p class="text-xs" style="color:var(--text3)">Kirim semua tugas dari app ? tulis ke spreadsheet (overwrite)</p>
           </div>
         </div>
@@ -351,11 +420,11 @@
       </div>
       <!-- Preview -->
       <div class="card" id="sheetsPreview" style="display:none">
-        <h2 class="text-base font-semibold mb-3">?? Preview Data dari Sheets</h2>
+        <h2 class="text-base font-semibold mb-3">📄 Preview Data dari Sheets</h2>
         <div id="sheetsPreviewContent"></div>
         <div class="flex flex-wrap gap-2 mt-4">
-          <button id="btnImportSheets" class="btn-primary flex-1 md:flex-none">? Import ke Tugas</button>
-          <button id="btnDownloadTemplate" class="btn-secondary flex-1 md:flex-none">?? Download Template</button>
+          <button id="btnImportSheets" class="btn-primary flex-1 md:flex-none">✅ Import ke Tugas</button>
+          <button id="btnDownloadTemplate" class="btn-secondary flex-1 md:flex-none">⬇️ Download Template</button>
         </div>
       </div>
     </div>
@@ -364,7 +433,7 @@
   <!-- ===== PAGE: SETTINGS ===== -->
   <div class="page" id="page-settings">
     <div class="sticky top-10 z-30 page-header-mobile border-b border-border px-4 py-3 md:hidden">
-      <h1 class="text-lg font-bold">?? Pengaturan</h1>
+      <h1 class="text-lg font-bold">⚙️ Pengaturan</h1>
     </div>
     <div class="hidden md:block px-8 pt-8 pb-4">
       <h1 class="text-2xl font-bold">Pengaturan</h1>
@@ -372,14 +441,14 @@
     <div class="px-4 md:px-8 pb-4 space-y-4">
       <!-- Mata Pelajaran -->
       <div class="card">
-        <h2 class="text-base font-semibold mb-1">?? Mata Pelajaran</h2>
+        <h2 class="text-base font-semibold mb-1">🎨 Mata Pelajaran</h2>
         <p class="text-sm mb-4" style="color:var(--text2)">Kelola daftar mata pelajaran dan warnanya.</p>
         <div id="mapelList" class="space-y-2 mb-4"></div>
         <button id="btnTambahMapelSettings" class="btn-secondary w-full md:w-auto">+ Tambah Mapel Baru</button>
       </div>
       <!-- Jam Sekolah -->
       <div class="card">
-        <h2 class="text-base font-semibold mb-1">?? Jam Sekolah</h2>
+        <h2 class="text-base font-semibold mb-1">🕐 Jam Sekolah</h2>
         <p class="text-sm mb-4" style="color:var(--text2)">Atur rentang waktu dan durasi per slot jadwal.</p>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
           <div class="form-group">
@@ -399,7 +468,7 @@
       </div>
       <!-- Reset -->
       <div class="card card-danger">
-        <h2 class="text-base font-semibold mb-1" style="color:var(--danger)">?? Reset Data</h2>
+        <h2 class="text-base font-semibold mb-1" style="color:var(--danger)">⚠️ Reset Data</h2>
         <p class="text-sm mb-4" style="color:var(--text2)">Hapus semua data jadwal dan tugas. Tidak bisa dibatalkan.</p>
         <button id="btnResetData" class="btn-danger w-full md:w-auto">Reset Semua Data</button>
       </div>
@@ -520,7 +589,7 @@
       </div>
       <div class="form-group">
         <label class="form-label">Ikon (emoji)</label>
-        <input type="text" id="ikonMapel" placeholder="??" class="input-field" maxlength="2"/>
+        <input type="text" id="ikonMapel" placeholder="📐" class="input-field" maxlength="2"/>
       </div>
     </div>
     <div class="modal-footer">
