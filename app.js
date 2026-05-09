@@ -1901,3 +1901,99 @@ function savePomSettings() {
   if (!pomState.running) { pomState.timeLeft = w * 60; pomState.mode = 'work'; updatePomDisplay(); }
   showToast('Pengaturan Pomodoro disimpan!','success');
 }
+
+// ===== GOOGLE APPS SCRIPT INTEGRATION =====
+const APPS_SCRIPT_CODE = `/**
+ * SchoolPlanner - Google Apps Script Backend
+ * Deploy sebagai Web App: Execute as Me, Anyone can access
+ */
+const SPREADSHEET_ID = 'GANTI_DENGAN_SPREADSHEET_ID_KAMU';
+const SHEET_TUGAS  = 'Tugas';
+const SHEET_JADWAL = 'Jadwal';
+
+function makeResponse(data) {
+  return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON);
+}
+function doGet(e) {
+  try {
+    const action = e.parameter.action || 'getTugas';
+    if (action === 'ping')     return makeResponse({ ok:true, message:'SchoolPlanner API aktif ✅' });
+    if (action === 'getTugas') return makeResponse({ ok:true, data:getTugasData() });
+    if (action === 'getAll')   return makeResponse({ ok:true, tugas:getTugasData(), jadwal:getJadwalData() });
+    return makeResponse({ ok:false, error:'Action tidak dikenal' });
+  } catch(err) { return makeResponse({ ok:false, error:err.toString() }); }
+}
+function doPost(e) {
+  try {
+    const body = JSON.parse(e.postData.contents);
+    if (body.action === 'addTugas')    { addTugasRow(body.data);              return makeResponse({ ok:true }); }
+    if (body.action === 'updateStatus'){ updateTugasStatus(body.id,body.status); return makeResponse({ ok:true }); }
+    if (body.action === 'deleteTugas') { deleteTugasRow(body.id);             return makeResponse({ ok:true }); }
+    if (body.action === 'syncTugas')   { syncAllTugas(body.data);             return makeResponse({ ok:true }); }
+    return makeResponse({ ok:false, error:'Action tidak dikenal' });
+  } catch(err) { return makeResponse({ ok:false, error:err.toString() }); }
+}
+function getOrCreateSheet(name, headers) {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  let sheet = ss.getSheetByName(name);
+  if (!sheet) {
+    sheet = ss.insertSheet(name);
+    sheet.getRange(1,1,1,headers.length).setValues([headers]);
+    sheet.getRange(1,1,1,headers.length).setBackground('#4a4a6a').setFontColor('#ffffff').setFontWeight('bold');
+    sheet.setFrozenRows(1);
+  }
+  return sheet;
+}
+const TUGAS_HEADERS = ['ID','Judul','Mata Pelajaran','Guru','Deadline','Tipe','Catatan','Status','Dibuat'];
+function getTugasData() {
+  const sheet = getOrCreateSheet(SHEET_TUGAS, TUGAS_HEADERS);
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return [];
+  return sheet.getRange(2,1,lastRow-1,TUGAS_HEADERS.length).getValues()
+    .filter(r => r[0])
+    .map(r => ({
+      id:r[0].toString(), judul:r[1].toString(), mapelNama:r[2].toString(),
+      guru:r[3].toString(),
+      deadline:r[4] ? Utilities.formatDate(new Date(r[4]),'Asia/Jakarta','yyyy-MM-dd') : '',
+      tipe:r[5].toString()||'pr', catatan:r[6].toString(),
+      selesai:r[7].toString().toLowerCase()==='selesai',
+      createdAt:r[8] ? new Date(r[8]).getTime() : Date.now()
+    }));
+}
+function addTugasRow(data) {
+  const sheet = getOrCreateSheet(SHEET_TUGAS, TUGAS_HEADERS);
+  sheet.appendRow([data.id,data.judul,data.mapelNama||'',data.guru||'',data.deadline||'',data.tipe||'pr',data.catatan||'',data.selesai?'Selesai':'Belum',new Date()]);
+}
+function updateTugasStatus(id, status) {
+  const sheet = getOrCreateSheet(SHEET_TUGAS, TUGAS_HEADERS);
+  const lastRow = sheet.getLastRow(); if (lastRow < 2) return;
+  const ids = sheet.getRange(2,1,lastRow-1,1).getValues();
+  for (let i=0;i<ids.length;i++) { if (ids[i][0].toString()===id.toString()) { sheet.getRange(i+2,8).setValue(status?'Selesai':'Belum'); return; } }
+}
+function deleteTugasRow(id) {
+  const sheet = getOrCreateSheet(SHEET_TUGAS, TUGAS_HEADERS);
+  const lastRow = sheet.getLastRow(); if (lastRow < 2) return;
+  const ids = sheet.getRange(2,1,lastRow-1,1).getValues();
+  for (let i=ids.length-1;i>=0;i--) { if (ids[i][0].toString()===id.toString()) { sheet.deleteRow(i+2); return; } }
+}
+function syncAllTugas(tugasList) {
+  const sheet = getOrCreateSheet(SHEET_TUGAS, TUGAS_HEADERS);
+  const lastRow = sheet.getLastRow();
+  if (lastRow > 1) sheet.deleteRows(2, lastRow-1);
+  if (tugasList && tugasList.length > 0) {
+    const rows = tugasList.map(t => [t.id,t.judul,t.mapelNama||'',t.guru||'',t.deadline||'',t.tipe||'pr',t.catatan||'',t.selesai?'Selesai':'Belum',t.createdAt?new Date(t.createdAt):new Date()]);
+    sheet.getRange(2,1,rows.length,TUGAS_HEADERS.length).setValues(rows);
+  }
+}
+const JADWAL_HEADERS = ['ID','Hari','Mata Pelajaran','Jam Mulai','Jam Selesai','Guru','Ruangan'];
+function getJadwalData() {
+  const sheet = getOrCreateSheet(SHEET_JADWAL, JADWAL_HEADERS);
+  const lastRow = sheet.getLastRow(); if (lastRow < 2) return {};
+  const result = {};
+  sheet.getRange(2,1,lastRow-1,JADWAL_HEADERS.length).getValues().filter(r=>r[0]).forEach(r => {
+    const hari = r[1].toString().toLowerCase();
+    if (!result[hari]) result[hari] = [];
+    result[hari].push({ id:r[0].toString(), hari, mapelNama:r[2].toString(), jamMulai:r[3].toString(), jamSelesai:r[4].toString(), guru:r[5].toString(), ruangan:r[6].toString() });
+  });
+  return result;
+}`;
