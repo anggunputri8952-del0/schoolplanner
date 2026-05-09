@@ -53,11 +53,6 @@ function loadState() {
 
 function saveState() {
   localStorage.setItem('schoolplanner', JSON.stringify(state));
-  if (window._fb) {
-    clearTimeout(window._fbSaveTimer);
-    window._fbSaveTimer = setTimeout(() => { window._fb.saveToCloud(state); setSyncStatus('synced'); }, 800);
-    setSyncStatus('saving');
-  }
   // Auto-push ke Sheets jika terhubung (debounce 1.5s)
   if (state.sheets.connected && state.sheets.scriptUrl) {
     clearTimeout(window._sheetsSaveTimer);
@@ -65,14 +60,7 @@ function saveState() {
   }
 }
 
-function setSyncStatus(status) {
-  const msgs = { saving:'☁️ Menyimpan...', synced:'☁️ Tersimpan di cloud', local:'💾 Tersimpan lokal' };
-  const msgM = { saving:'☁️ Menyimpan...', synced:'☁️ Cloud', local:'💾 Lokal' };
-  const cls  = { saving:'saving', synced:'synced', local:'local' };
-  const d = document.getElementById('authStatus'), m = document.getElementById('authStatusMobile');
-  if (d) { d.textContent = msgs[status]||msgs.local; d.className = 'auth-status '+(cls[status]||'local'); }
-  if (m) { m.textContent = msgM[status]||msgM.local; m.className = 'auth-status '+(cls[status]||'local'); }
-}
+
 
 // ===== DRAFT =====
 function saveDraft(key, data) { try { localStorage.setItem('draft_'+key, JSON.stringify(data)); } catch(e) {} }
@@ -1020,30 +1008,6 @@ function init() {
   document.addEventListener('keydown', e => {
     if (e.key==='Escape') { closeModalMapel(); closeModalTugas(); closeModalMapelBaru(); }
   });
-
-  // Firebase auth handlers
-  window._onCloudLogin = (cloudState) => {
-    if (!cloudState) return;
-    state = { ...loadState(), ...cloudState, sheets: cloudState.sheets || state.sheets };
-    localStorage.setItem('schoolplanner', JSON.stringify(state));
-    renderJadwal(); renderTugas(); renderSettings(); initSheets();
-    showToast('Data berhasil dimuat dari cloud ☁️','success');
-    setSyncStatus('synced');
-  };
-
-  window._onCloudSync = (newState) => {
-    if (!newState || JSON.stringify(state)===JSON.stringify(newState)) return;
-    state = { ...state, ...newState };
-    localStorage.setItem('schoolplanner', JSON.stringify(state));
-    renderJadwal(); renderTugas(); renderSettings(); initSheets();
-    setSyncStatus('synced');
-  };
-
-  // Auth buttons
-  document.getElementById('btnLogin')?.addEventListener('click', ()=>window._fb?.login());
-  document.getElementById('btnLogout')?.addEventListener('click', ()=>{ window._fb?.logout(); setSyncStatus('local'); showToast('Logout berhasil','default'); });
-  document.getElementById('btnLoginMobile')?.addEventListener('click', ()=>window._fb?.login());
-  document.getElementById('btnLogoutMobile')?.addEventListener('click', ()=>{ window._fb?.logout(); setSyncStatus('local'); showToast('Logout berhasil','default'); });
 }
 
 document.addEventListener('DOMContentLoaded', init);
