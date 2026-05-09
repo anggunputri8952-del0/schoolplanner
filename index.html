@@ -65,20 +65,20 @@
         src('authAvatar', user.photoURL||''); show('authAvatar','block');
         text('authName', user.displayName||user.email); show('authName','block');
         show('btnLogin','none'); show('btnLogout','inline-flex');
-        text('authStatus','☁️ Tersimpan di cloud');
+        text('authStatus','?? Tersimpan di cloud');
         document.getElementById('authStatus')?.setAttribute('class','auth-status synced');
         src('authAvatarMobile', user.photoURL||''); show('authAvatarMobile','block');
         show('btnLoginMobile','none'); show('btnLogoutMobile','inline-flex');
-        text('authStatusMobile','☁️ Cloud');
+        text('authStatusMobile','?? Cloud');
         document.getElementById('authStatusMobile')?.setAttribute('class','auth-status synced');
       } else {
         show('authAvatar','none'); show('authName','none');
         show('btnLogin','inline-flex'); show('btnLogout','none');
-        text('authStatus','💾 Tersimpan lokal');
+        text('authStatus','?? Tersimpan lokal');
         document.getElementById('authStatus')?.setAttribute('class','auth-status local');
         show('authAvatarMobile','none');
         show('btnLoginMobile','inline-flex'); show('btnLogoutMobile','none');
-        text('authStatusMobile','💾 Lokal');
+        text('authStatusMobile','?? Lokal');
         document.getElementById('authStatusMobile')?.setAttribute('class','auth-status local');
         window._fb.stopSubscribe();
       }
@@ -109,27 +109,27 @@
 <!-- Mobile Bottom Nav -->
 <nav class="md:hidden fixed bottom-0 left-0 right-0 bottom-nav border-t border-border z-50 safe-bottom">
   <div class="flex items-center justify-around px-1 py-1">
-    <button class="nav-item-mobile active" data-page="jadwal"><span class="text-xl">🗓️</span><span>Jadwal</span></button>
-    <button class="nav-item-mobile" data-page="tugas"><span class="text-xl">📝</span><span>Tugas</span></button>
-    <button class="nav-item-mobile" data-page="overview"><span class="text-xl">📊</span><span>Overview</span></button>
-    <button class="nav-item-mobile" data-page="pomodoro"><span class="text-xl">🍅</span><span>Fokus</span></button>
-    <button class="nav-item-mobile" data-page="spreadsheet"><span class="text-xl">📋</span><span>Sheets</span></button>
-    <button class="nav-item-mobile" data-page="settings"><span class="text-xl">⚙️</span><span>Setting</span></button>
+    <button class="nav-item-mobile active" data-page="jadwal"><span class="text-xl">???</span><span>Jadwal</span></button>
+    <button class="nav-item-mobile" data-page="tugas"><span class="text-xl">??</span><span>Tugas</span></button>
+    <button class="nav-item-mobile" data-page="overview"><span class="text-xl">??</span><span>Overview</span></button>
+    <button class="nav-item-mobile" data-page="pomodoro"><span class="text-xl">??</span><span>Fokus</span></button>
+    <button class="nav-item-mobile" data-page="spreadsheet"><span class="text-xl">??</span><span>Sheets</span></button>
+    <button class="nav-item-mobile" data-page="settings"><span class="text-xl">??</span><span>Setting</span></button>
   </div>
 </nav>
 
 <!-- Desktop Sidebar -->
 <aside class="hidden md:flex fixed left-0 top-0 bottom-0 w-64 bg-bg2 border-r border-border flex-col z-40">
   <div class="p-5 border-b border-border">
-    <div class="flex items-center gap-3"><span class="text-3xl">📚</span><span class="text-lg font-bold tracking-tight">SchoolPlanner</span></div>
+    <div class="flex items-center gap-3"><span class="text-3xl">??</span><span class="text-lg font-bold tracking-tight">SchoolPlanner</span></div>
   </div>
   <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
-    <button class="nav-item active" data-page="jadwal"><span class="text-xl">🗓️</span><span>Jadwal Mapel</span></button>
-    <button class="nav-item" data-page="tugas"><span class="text-xl">📝</span><span>Tugas & PR</span></button>
-    <button class="nav-item" data-page="overview"><span class="text-xl">📊</span><span>Overview</span></button>
-    <button class="nav-item" data-page="pomodoro"><span class="text-xl">🍅</span><span>Pomodoro Fokus</span></button>
-    <button class="nav-item" data-page="spreadsheet"><span class="text-xl">📋</span><span>Google Sheets</span></button>
-    <button class="nav-item" data-page="settings"><span class="text-xl">⚙️</span><span>Pengaturan</span></button>
+    <button class="nav-item active" data-page="jadwal"><span class="text-xl">???</span><span>Jadwal Mapel</span></button>
+    <button class="nav-item" data-page="tugas"><span class="text-xl">??</span><span>Tugas & PR</span></button>
+    <button class="nav-item" data-page="overview"><span class="text-xl">??</span><span>Overview</span></button>
+    <button class="nav-item" data-page="pomodoro"><span class="text-xl">??</span><span>Pomodoro Fokus</span></button>
+    <button class="nav-item" data-page="spreadsheet"><span class="text-xl">??</span><span>Google Sheets</span></button>
+    <button class="nav-item" data-page="settings"><span class="text-xl">??</span><span>Pengaturan</span></button>
   </nav>
   <div class="p-4 border-t border-border">
     <div class="text-xs uppercase tracking-wider mb-1" style="color:var(--text3)">Hari ini</div>
@@ -139,8 +139,8 @@
         <img id="authAvatar" src="" alt="" class="w-7 h-7 rounded-full object-cover" style="display:none"/>
         <span id="authName" class="text-xs truncate flex-1" style="color:var(--text2);display:none"></span>
       </div>
-      <div id="authStatus" class="auth-status local mb-2">💾 Tersimpan lokal</div>
-      <button id="btnLogin" class="btn-auth w-full">🔑 Login Google</button>
+      <div id="authStatus" class="auth-status local mb-2">?? Tersimpan lokal</div>
+      <button id="btnLogin" class="btn-auth w-full">?? Login Google</button>
       <button id="btnLogout" class="btn-auth-out w-full mt-1" style="display:none">Logout</button>
     </div>
   </div>
@@ -148,10 +148,10 @@
 
 <!-- Mobile Auth Bar -->
 <div class="md:hidden fixed top-0 left-0 right-0 z-40 mobile-auth-bar flex items-center justify-between px-4 py-2">
-  <div id="authStatusMobile" class="auth-status local text-xs">💾 Lokal</div>
+  <div id="authStatusMobile" class="auth-status local text-xs">?? Lokal</div>
   <div class="flex items-center gap-2">
     <img id="authAvatarMobile" src="" alt="" class="w-6 h-6 rounded-full object-cover" style="display:none"/>
-    <button id="btnLoginMobile" class="btn-auth-sm">🔑 Login</button>
+    <button id="btnLoginMobile" class="btn-auth-sm">?? Login</button>
     <button id="btnLogoutMobile" class="btn-auth-out-sm" style="display:none">Logout</button>
   </div>
 </div>
@@ -163,7 +163,7 @@
   <div class="page active" id="page-jadwal">
     <div class="sticky top-10 z-30 page-header-mobile border-b border-border px-4 py-3 md:hidden">
       <div class="flex items-center justify-between">
-        <h1 class="text-lg font-bold">🗓️ Jadwal Mapel</h1>
+        <h1 class="text-lg font-bold">??? Jadwal Mapel</h1>
         <button id="btnTambahMapel" class="btn-primary-sm">+ Tambah</button>
       </div>
     </div>
@@ -179,7 +179,7 @@
         <button class="day-tab flex-shrink-0" data-day="kamis">Kamis</button>
         <button class="day-tab flex-shrink-0" data-day="jumat">Jumat</button>
       </div>
-      <div id="conflictWarning" class="status-msg error mb-3" style="display:none">⚠️ Ada jadwal yang bentrok!</div>
+      <div id="conflictWarning" class="status-msg error mb-3" style="display:none">?? Ada jadwal yang bentrok!</div>
       <div class="bg-bg2 rounded-2xl border border-border overflow-hidden">
         <div class="flex">
           <div class="w-16 flex-shrink-0 border-r border-border">
@@ -198,7 +198,7 @@
   <div class="page" id="page-tugas">
     <div class="sticky top-10 z-30 page-header-mobile border-b border-border px-4 py-3 md:hidden">
       <div class="flex items-center justify-between">
-        <h1 class="text-lg font-bold">📝 Tugas & PR</h1>
+        <h1 class="text-lg font-bold">?? Tugas & PR</h1>
         <button id="btnTambahTugas" class="btn-primary-sm">+ Tambah</button>
       </div>
     </div>
@@ -207,9 +207,14 @@
       <button id="btnTambahTugasDesktop" class="btn-primary">+ Tambah Tugas</button>
     </div>
     <div class="px-4 md:px-8 pb-4">
+      <!-- Deadline Alert -->
+      <div id="deadlineAlert" class="deadline-alert-banner mb-3" style="display:none">
+        <span class="alert-text"></span>
+      </div>
       <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide mb-4">
         <button class="filter-btn active flex-shrink-0" data-filter="semua">Semua</button>
         <button class="filter-btn flex-shrink-0" data-filter="belum">Belum Selesai</button>
+        <button class="filter-btn flex-shrink-0" data-filter="hari-ini">Hari Ini</button>
         <button class="filter-btn flex-shrink-0" data-filter="selesai">Selesai</button>
         <button class="filter-btn flex-shrink-0" data-filter="terlambat">Terlambat</button>
       </div>
@@ -217,11 +222,57 @@
     </div>
   </div>
 
+  <!-- ===== PAGE: OVERVIEW ===== -->
+  <div class="page" id="page-overview">
+    <div class="sticky top-10 z-30 page-header-mobile border-b border-border px-4 py-3 md:hidden">
+      <h1 class="text-lg font-bold">📊 Overview</h1>
+    </div>
+    <div class="hidden md:block px-8 pt-8 pb-4"><h1 class="text-2xl font-bold">Overview</h1></div>
+    <div class="px-4 md:px-8 pb-4" id="overviewContent"></div>
+  </div>
+
+  <!-- ===== PAGE: POMODORO ===== -->
+  <div class="page" id="page-pomodoro">
+    <div class="sticky top-10 z-30 page-header-mobile border-b border-border px-4 py-3 md:hidden">
+      <h1 class="text-lg font-bold">🍅 Pomodoro Fokus</h1>
+    </div>
+    <div class="hidden md:block px-8 pt-8 pb-4"><h1 class="text-2xl font-bold">Pomodoro Fokus</h1></div>
+    <div class="px-4 md:px-8 pb-4 max-w-md mx-auto">
+      <div class="card text-center mb-4">
+        <div id="pomModeLabel" class="text-sm font-medium mb-3" style="color:var(--text2)">🍅 Fokus</div>
+        <div id="pomTimer" class="pom-timer">25:00</div>
+        <div id="pomSessions" class="text-xs mt-2 mb-4" style="color:var(--text3)">Sesi: 0</div>
+        <div class="flex gap-3 justify-center">
+          <button id="pomStart" class="btn-primary px-8">▶ Mulai</button>
+          <button id="pomReset" class="btn-secondary">↺ Reset</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2 class="text-sm font-semibold mb-3">⚙️ Pengaturan Waktu (menit)</h2>
+        <div class="grid grid-cols-3 gap-3 mb-3">
+          <div class="form-group"><label class="form-label">Fokus</label><input type="number" id="pomWork" value="25" min="1" max="120" class="input-field text-center"/></div>
+          <div class="form-group"><label class="form-label">Istirahat Pendek</label><input type="number" id="pomShort" value="5" min="1" max="60" class="input-field text-center"/></div>
+          <div class="form-group"><label class="form-label">Istirahat Panjang</label><input type="number" id="pomLong" value="15" min="1" max="60" class="input-field text-center"/></div>
+        </div>
+        <button id="pomSave" class="btn-secondary w-full">Simpan Pengaturan</button>
+      </div>
+      <div class="card mt-4">
+        <h2 class="text-sm font-semibold mb-2">💡 Tips Pomodoro</h2>
+        <ul class="text-sm space-y-1" style="color:var(--text2)">
+          <li>🍅 Fokus penuh selama sesi kerja</li>
+          <li>📵 Matikan notifikasi HP saat fokus</li>
+          <li>☕ Gunakan istirahat untuk bergerak</li>
+          <li>🛌 Setiap 4 sesi, ambil istirahat panjang</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
   <!-- ===== PAGE: SPREADSHEET ===== -->
   <div class="page" id="page-spreadsheet">
     <div class="sticky top-10 z-30 page-header-mobile border-b border-border px-4 py-3 md:hidden">
       <div class="flex items-center justify-between">
-        <h1 class="text-lg font-bold">📊 Google Sheets</h1>
+        <h1 class="text-lg font-bold">?? Google Sheets</h1>
         <div id="connectionBadge" class="conn-badge">
           <span class="badge-dot"></span>
           <span id="connectionLabel" class="text-xs font-medium">Belum terhubung</span>
@@ -246,13 +297,13 @@
           </div>
         </div>
         <div class="rounded-xl border p-4 space-y-3 mb-4" style="background:var(--bg3);border-color:var(--border)">
-          <div class="flex gap-3 text-sm" style="color:var(--text2)"><span>①</span><span>Buka <a href="https://script.google.com" target="_blank" class="underline font-medium" style="color:var(--primd)">script.google.com</a> → klik <strong>New Project</strong></span></div>
-          <div class="flex gap-3 text-sm" style="color:var(--text2)"><span>②</span><span>Hapus kode default, paste kode dari tombol di bawah. Ganti <code class="px-1.5 py-0.5 rounded text-xs" style="background:var(--bg);color:var(--primd)">SPREADSHEET_ID</code></span></div>
-          <div class="flex gap-3 text-sm" style="color:var(--text2)"><span>③</span><span>Klik <strong>Deploy → New Deployment → Web App</strong></span></div>
-          <div class="flex gap-3 text-sm" style="color:var(--text2)"><span>④</span><span>Set <strong>Execute as: Me</strong> dan <strong>Who has access: Anyone</strong> → Deploy</span></div>
-          <div class="flex gap-3 text-sm" style="color:var(--text2)"><span>⑤</span><span>Copy URL Web App → paste di Step 2</span></div>
+          <div class="flex gap-3 text-sm" style="color:var(--text2)"><span>?</span><span>Buka <a href="https://script.google.com" target="_blank" class="underline font-medium" style="color:var(--primd)">script.google.com</a> ? klik <strong>New Project</strong></span></div>
+          <div class="flex gap-3 text-sm" style="color:var(--text2)"><span>?</span><span>Hapus kode default, paste kode dari tombol di bawah. Ganti <code class="px-1.5 py-0.5 rounded text-xs" style="background:var(--bg);color:var(--primd)">SPREADSHEET_ID</code></span></div>
+          <div class="flex gap-3 text-sm" style="color:var(--text2)"><span>?</span><span>Klik <strong>Deploy ? New Deployment ? Web App</strong></span></div>
+          <div class="flex gap-3 text-sm" style="color:var(--text2)"><span>?</span><span>Set <strong>Execute as: Me</strong> dan <strong>Who has access: Anyone</strong> ? Deploy</span></div>
+          <div class="flex gap-3 text-sm" style="color:var(--text2)"><span>?</span><span>Copy URL Web App ? paste di Step 2</span></div>
         </div>
-        <button id="btnCopyScript" class="btn-secondary w-full md:w-auto">📋 Copy Kode Apps Script</button>
+        <button id="btnCopyScript" class="btn-secondary w-full md:w-auto">?? Copy Kode Apps Script</button>
       </div>
       <!-- Step 2 -->
       <div class="card">
@@ -268,8 +319,8 @@
           <input type="url" id="scriptUrl" placeholder="https://script.google.com/macros/s/.../exec" class="input-field"/>
         </div>
         <div class="flex flex-wrap gap-2">
-          <button id="btnConnectScript" class="btn-primary flex-1 md:flex-none">🔌 Hubungkan</button>
-          <button id="btnPingScript" class="btn-secondary flex-1 md:flex-none" disabled>🏓 Test</button>
+          <button id="btnConnectScript" class="btn-primary flex-1 md:flex-none">?? Hubungkan</button>
+          <button id="btnPingScript" class="btn-secondary flex-1 md:flex-none" disabled>?? Test</button>
           <button id="btnDisconnect" class="btn-danger-outline ml-auto" disabled>Putuskan</button>
         </div>
         <div id="sheetsStatus" class="status-msg mt-3"></div>
@@ -288,23 +339,23 @@
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div class="rounded-xl border p-4" style="background:var(--bg3);border-color:var(--border)">
-            <button id="btnPullTugas" class="btn-primary w-full mb-2">⬇️ Pull dari Sheets</button>
-            <p class="text-xs" style="color:var(--text3)">Ambil tugas dari spreadsheet → tambahkan ke app (skip duplikat)</p>
+            <button id="btnPullTugas" class="btn-primary w-full mb-2">?? Pull dari Sheets</button>
+            <p class="text-xs" style="color:var(--text3)">Ambil tugas dari spreadsheet ? tambahkan ke app (skip duplikat)</p>
           </div>
           <div class="rounded-xl border p-4" style="background:var(--bg3);border-color:var(--border)">
-            <button id="btnPushTugas" class="btn-secondary w-full mb-2">⬆️ Push ke Sheets</button>
-            <p class="text-xs" style="color:var(--text3)">Kirim semua tugas dari app → tulis ke spreadsheet (overwrite)</p>
+            <button id="btnPushTugas" class="btn-secondary w-full mb-2">?? Push ke Sheets</button>
+            <p class="text-xs" style="color:var(--text3)">Kirim semua tugas dari app ? tulis ke spreadsheet (overwrite)</p>
           </div>
         </div>
         <div id="syncStatus" class="status-msg mt-3"></div>
       </div>
       <!-- Preview -->
       <div class="card" id="sheetsPreview" style="display:none">
-        <h2 class="text-base font-semibold mb-3">📄 Preview Data dari Sheets</h2>
+        <h2 class="text-base font-semibold mb-3">?? Preview Data dari Sheets</h2>
         <div id="sheetsPreviewContent"></div>
         <div class="flex flex-wrap gap-2 mt-4">
-          <button id="btnImportSheets" class="btn-primary flex-1 md:flex-none">✅ Import ke Tugas</button>
-          <button id="btnDownloadTemplate" class="btn-secondary flex-1 md:flex-none">⬇️ Download Template</button>
+          <button id="btnImportSheets" class="btn-primary flex-1 md:flex-none">? Import ke Tugas</button>
+          <button id="btnDownloadTemplate" class="btn-secondary flex-1 md:flex-none">?? Download Template</button>
         </div>
       </div>
     </div>
@@ -313,7 +364,7 @@
   <!-- ===== PAGE: SETTINGS ===== -->
   <div class="page" id="page-settings">
     <div class="sticky top-10 z-30 page-header-mobile border-b border-border px-4 py-3 md:hidden">
-      <h1 class="text-lg font-bold">⚙️ Pengaturan</h1>
+      <h1 class="text-lg font-bold">?? Pengaturan</h1>
     </div>
     <div class="hidden md:block px-8 pt-8 pb-4">
       <h1 class="text-2xl font-bold">Pengaturan</h1>
@@ -321,14 +372,14 @@
     <div class="px-4 md:px-8 pb-4 space-y-4">
       <!-- Mata Pelajaran -->
       <div class="card">
-        <h2 class="text-base font-semibold mb-1">🎨 Mata Pelajaran</h2>
+        <h2 class="text-base font-semibold mb-1">?? Mata Pelajaran</h2>
         <p class="text-sm mb-4" style="color:var(--text2)">Kelola daftar mata pelajaran dan warnanya.</p>
         <div id="mapelList" class="space-y-2 mb-4"></div>
         <button id="btnTambahMapelSettings" class="btn-secondary w-full md:w-auto">+ Tambah Mapel Baru</button>
       </div>
       <!-- Jam Sekolah -->
       <div class="card">
-        <h2 class="text-base font-semibold mb-1">🕐 Jam Sekolah</h2>
+        <h2 class="text-base font-semibold mb-1">?? Jam Sekolah</h2>
         <p class="text-sm mb-4" style="color:var(--text2)">Atur rentang waktu dan durasi per slot jadwal.</p>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
           <div class="form-group">
@@ -348,7 +399,7 @@
       </div>
       <!-- Reset -->
       <div class="card card-danger">
-        <h2 class="text-base font-semibold mb-1" style="color:var(--danger)">⚠️ Reset Data</h2>
+        <h2 class="text-base font-semibold mb-1" style="color:var(--danger)">?? Reset Data</h2>
         <p class="text-sm mb-4" style="color:var(--text2)">Hapus semua data jadwal dan tugas. Tidak bisa dibatalkan.</p>
         <button id="btnResetData" class="btn-danger w-full md:w-auto">Reset Semua Data</button>
       </div>
@@ -362,7 +413,7 @@
   <div class="modal">
     <div class="modal-header">
       <h2 class="text-base font-semibold" id="modalMapelTitle">Tambah Mapel</h2>
-      <button class="modal-close" id="closeModalMapel">✕</button>
+      <button class="modal-close" id="closeModalMapel">?</button>
     </div>
     <div class="modal-body space-y-4">
       <div class="form-group">
@@ -410,7 +461,7 @@
   <div class="modal">
     <div class="modal-header">
       <h2 class="text-base font-semibold" id="modalTugasTitle">Tambah Tugas</h2>
-      <button class="modal-close" id="closeModalTugas">✕</button>
+      <button class="modal-close" id="closeModalTugas">?</button>
     </div>
     <div class="modal-body space-y-4">
       <div class="form-group">
@@ -459,7 +510,7 @@
   <div class="modal modal-sm">
     <div class="modal-header">
       <h2 class="text-base font-semibold">Tambah Mata Pelajaran</h2>
-      <button class="modal-close" id="closeModalMapelBaru">✕</button>
+      <button class="modal-close" id="closeModalMapelBaru">?</button>
     </div>
     <div class="modal-body space-y-4">
       <div class="form-group">
@@ -472,7 +523,7 @@
       </div>
       <div class="form-group">
         <label class="form-label">Ikon (emoji)</label>
-        <input type="text" id="ikonMapel" placeholder="📐" class="input-field" maxlength="2"/>
+        <input type="text" id="ikonMapel" placeholder="??" class="input-field" maxlength="2"/>
       </div>
     </div>
     <div class="modal-footer">
@@ -483,424 +534,6 @@
 </div>
 
 <!-- Toast -->
-<!-- Toast -->
-<div id="toast" class="toast-base" role="alert" aria-live="polite"></div>
-
-<script src="app.js"></script>
-</body>
-</html>
-<nav class="md:hidden fixed bottom-0 left-0 right-0 bottom-nav border-t border-border z-50 safe-bottom">
-  <div class="flex items-center justify-around px-1 py-1">
-    <button class="nav-item-mobile active" data-page="jadwal"><span class="text-xl">🗓️</span><span>Jadwal</span></button>
-    <button class="nav-item-mobile" data-page="tugas"><span class="text-xl">📝</span><span>Tugas</span></button>
-    <button class="nav-item-mobile" data-page="overview"><span class="text-xl">📊</span><span>Overview</span></button>
-    <button class="nav-item-mobile" data-page="pomodoro"><span class="text-xl">🍅</span><span>Fokus</span></button>
-    <button class="nav-item-mobile" data-page="spreadsheet"><span class="text-xl">📋</span><span>Sheets</span></button>
-    <button class="nav-item-mobile" data-page="settings"><span class="text-xl">⚙️</span><span>Setting</span></button>
-  </div>
-</nav>
-
-<!-- Desktop Sidebar -->
-<aside class="hidden md:flex fixed left-0 top-0 bottom-0 w-64 bg-bg2 border-r border-border flex-col z-40">
-  <div class="p-5 border-b border-border">
-    <div class="flex items-center gap-3">
-      <span class="text-3xl">📚</span>
-      <span class="text-lg font-bold tracking-tight">SchoolPlanner</span>
-    </div>
-  </div>
-  <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
-    <button class="nav-item active" data-page="jadwal"><span class="text-xl">🗓️</span><span>Jadwal Mapel</span></button>
-    <button class="nav-item" data-page="tugas"><span class="text-xl">📝</span><span>Tugas & PR</span></button>
-    <button class="nav-item" data-page="overview"><span class="text-xl">📊</span><span>Overview</span></button>
-    <button class="nav-item" data-page="pomodoro"><span class="text-xl">🍅</span><span>Pomodoro Fokus</span></button>
-    <button class="nav-item" data-page="spreadsheet"><span class="text-xl">📋</span><span>Google Sheets</span></button>
-    <button class="nav-item" data-page="settings"><span class="text-xl">⚙️</span><span>Pengaturan</span></button>
-  </nav>
-  <div class="p-4 border-t border-border">
-    <div class="text-xs uppercase tracking-wider mb-1" style="color:var(--text3)">Hari ini</div>
-    <div class="text-sm font-semibold" id="todayDate"></div>
-    <div class="mt-3 pt-3 border-t border-border">
-      <div class="flex items-center gap-2 mb-2">
-        <img id="authAvatar" src="" alt="" class="w-7 h-7 rounded-full object-cover" style="display:none"/>
-        <span id="authName" class="text-xs truncate flex-1" style="color:var(--text2);display:none"></span>
-      </div>
-      <div id="authStatus" class="auth-status local mb-2">💾 Tersimpan lokal</div>
-      <button id="btnLogin" class="btn-auth w-full">🔑 Login Google</button>
-      <button id="btnLogout" class="btn-auth-out w-full mt-1" style="display:none">Logout</button>
-    </div>
-  </div>
-</aside>
-
-<!-- Mobile Auth Bar -->
-<div class="md:hidden fixed top-0 left-0 right-0 z-40 mobile-auth-bar flex items-center justify-between px-4 py-2">
-  <div id="authStatusMobile" class="auth-status local text-xs">💾 Lokal</div>
-  <div class="flex items-center gap-2">
-    <img id="authAvatarMobile" src="" alt="" class="w-6 h-6 rounded-full object-cover" style="display:none"/>
-    <button id="btnLoginMobile" class="btn-auth-sm">🔑 Login</button>
-    <button id="btnLogoutMobile" class="btn-auth-out-sm" style="display:none">Logout</button>
-  </div>
-</div>
-
-<!-- Main Content -->
-<main class="md:ml-64 pb-24 md:pb-6 min-h-screen pt-10 md:pt-0">
-
-  <!-- ===== PAGE: JADWAL ===== -->
-  <div class="page active" id="page-jadwal">
-    <div class="sticky top-10 z-30 page-header-mobile border-b border-border px-4 py-3 md:hidden">
-      <div class="flex items-center justify-between">
-        <h1 class="text-lg font-bold">🗓️ Jadwal Mapel</h1>
-        <button id="btnTambahMapel" class="btn-primary-sm">+ Tambah</button>
-      </div>
-    </div>
-    <div class="hidden md:flex items-center justify-between px-8 pt-8 pb-4">
-      <h1 class="text-2xl font-bold">Jadwal Mapel</h1>
-      <button id="btnTambahMapelDesktop" class="btn-primary">+ Tambah Mapel</button>
-    </div>
-    <div class="px-4 md:px-8 pb-4">
-      <!-- Conflict warning -->
-      <div id="conflictWarning" class="conflict-banner mb-3" style="display:none">
-        <span>⚠️ Ada jadwal yang bentrok! Periksa kembali jam pelajaran.</span>
-      </div>
-      <!-- Day Tabs -->
-      <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide mb-4">
-        <button class="day-tab active flex-shrink-0" data-day="senin">Senin</button>
-        <button class="day-tab flex-shrink-0" data-day="selasa">Selasa</button>
-        <button class="day-tab flex-shrink-0" data-day="rabu">Rabu</button>
-        <button class="day-tab flex-shrink-0" data-day="kamis">Kamis</button>
-        <button class="day-tab flex-shrink-0" data-day="jumat">Jumat</button>
-      </div>
-      <!-- Schedule -->
-      <div class="bg-bg2 rounded-2xl border border-border overflow-hidden">
-        <div class="flex">
-          <div class="w-14 flex-shrink-0 border-r border-border">
-            <div class="h-10 border-b border-border flex items-center justify-center">
-              <span class="text-xs font-medium" style="color:var(--text3)">Jam</span>
-            </div>
-            <div id="timeSlots" class="time-slots"></div>
-          </div>
-          <div class="flex-1 relative min-h-96" id="scheduleGrid"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== PAGE: TUGAS ===== -->
-  <div class="page" id="page-tugas">
-    <div class="sticky top-10 z-30 page-header-mobile border-b border-border px-4 py-3 md:hidden">
-      <div class="flex items-center justify-between">
-        <h1 class="text-lg font-bold">📝 Tugas & PR</h1>
-        <button id="btnTambahTugas" class="btn-primary-sm">+ Tambah</button>
-      </div>
-    </div>
-    <div class="hidden md:flex items-center justify-between px-8 pt-8 pb-4">
-      <h1 class="text-2xl font-bold">Tugas & PR</h1>
-      <button id="btnTambahTugasDesktop" class="btn-primary">+ Tambah Tugas</button>
-    </div>
-    <div class="px-4 md:px-8 pb-4">
-      <!-- Deadline Alert -->
-      <div id="deadlineAlert" class="deadline-alert-banner mb-3" style="display:none">
-        <span class="alert-text"></span>
-      </div>
-      <!-- Filter Bar -->
-      <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide mb-4">
-        <button class="filter-btn active flex-shrink-0" data-filter="semua">Semua</button>
-        <button class="filter-btn flex-shrink-0" data-filter="belum">Belum Selesai</button>
-        <button class="filter-btn flex-shrink-0" data-filter="hari-ini">Hari Ini</button>
-        <button class="filter-btn flex-shrink-0" data-filter="selesai">Selesai</button>
-        <button class="filter-btn flex-shrink-0" data-filter="terlambat">Terlambat</button>
-      </div>
-      <div id="tugasList" class="space-y-3"></div>
-    </div>
-  </div>
-
-  <!-- ===== PAGE: OVERVIEW ===== -->
-  <div class="page" id="page-overview">
-    <div class="sticky top-10 z-30 page-header-mobile border-b border-border px-4 py-3 md:hidden">
-      <h1 class="text-lg font-bold">📊 Overview</h1>
-    </div>
-    <div class="hidden md:block px-8 pt-8 pb-4">
-      <h1 class="text-2xl font-bold">Overview</h1>
-    </div>
-    <div class="px-4 md:px-8 pb-4" id="overviewContent"></div>
-  </div>
-
-  <!-- ===== PAGE: POMODORO ===== -->
-  <div class="page" id="page-pomodoro">
-    <div class="sticky top-10 z-30 page-header-mobile border-b border-border px-4 py-3 md:hidden">
-      <h1 class="text-lg font-bold">🍅 Pomodoro Fokus</h1>
-    </div>
-    <div class="hidden md:block px-8 pt-8 pb-4">
-      <h1 class="text-2xl font-bold">Pomodoro Fokus</h1>
-    </div>
-    <div class="px-4 md:px-8 pb-4 max-w-md mx-auto">
-      <div class="card text-center mb-4">
-        <div id="pomModeLabel" class="text-sm font-medium mb-3" style="color:var(--text2)">🍅 Fokus</div>
-        <div id="pomTimer" class="pom-timer">25:00</div>
-        <div id="pomSessions" class="text-xs mt-2 mb-4" style="color:var(--text3)">Sesi: 0</div>
-        <div class="flex gap-3 justify-center">
-          <button id="pomStart" class="btn-primary px-8">▶ Mulai</button>
-          <button id="pomReset" class="btn-secondary">↺ Reset</button>
-        </div>
-      </div>
-      <div class="card">
-        <h2 class="text-sm font-semibold mb-3">⚙️ Pengaturan Waktu (menit)</h2>
-        <div class="grid grid-cols-3 gap-3 mb-3">
-          <div class="form-group">
-            <label class="form-label">Fokus</label>
-            <input type="number" id="pomWork" value="25" min="1" max="120" class="input-field text-center"/>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Istirahat Pendek</label>
-            <input type="number" id="pomShort" value="5" min="1" max="60" class="input-field text-center"/>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Istirahat Panjang</label>
-            <input type="number" id="pomLong" value="15" min="1" max="60" class="input-field text-center"/>
-          </div>
-        </div>
-        <button id="pomSave" class="btn-secondary w-full">Simpan Pengaturan</button>
-      </div>
-      <div class="card mt-4">
-        <h2 class="text-sm font-semibold mb-2">💡 Tips Pomodoro</h2>
-        <ul class="text-sm space-y-1" style="color:var(--text2)">
-          <li>🍅 Fokus penuh selama sesi kerja</li>
-          <li>📵 Matikan notifikasi HP saat fokus</li>
-          <li>☕ Gunakan istirahat untuk bergerak</li>
-          <li>🛌 Setiap 4 sesi, ambil istirahat panjang</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== PAGE: SPREADSHEET ===== -->
-  <div class="page" id="page-spreadsheet">
-    <div class="sticky top-10 z-30 page-header-mobile border-b border-border px-4 py-3 md:hidden">
-      <div class="flex items-center justify-between">
-        <h1 class="text-lg font-bold">📋 Google Sheets</h1>
-        <div id="connectionBadge" class="conn-badge"><span class="badge-dot"></span><span id="connectionLabel" class="text-xs font-medium">Belum terhubung</span></div>
-      </div>
-    </div>
-    <div class="hidden md:flex items-center justify-between px-8 pt-8 pb-4">
-      <h1 class="text-2xl font-bold">Google Sheets</h1>
-      <div id="connectionBadgeDesktop" class="conn-badge"><span class="badge-dot"></span><span id="connectionLabelDesktop" class="text-xs font-medium">Belum terhubung</span></div>
-    </div>
-    <div class="px-4 md:px-8 pb-4 space-y-4">
-
-      <!-- Step 1: Deploy Script -->
-      <div class="card">
-        <div class="step-header">
-          <div class="step-num">1</div>
-          <div>
-            <h2 class="text-base font-semibold mb-1">Deploy Google Apps Script</h2>
-            <p class="text-sm" style="color:var(--text2)">Satu kali setup. Kode sudah siap, tinggal deploy.</p>
-          </div>
-        </div>
-        <div class="steps-list mb-4">
-          <div class="step-row"><span class="step-circle">①</span><span>Buka <a href="https://script.google.com" target="_blank" class="link-primary">script.google.com</a> → klik <strong>New Project</strong></span></div>
-          <div class="step-row"><span class="step-circle">②</span><span>Hapus semua kode, lalu klik tombol <strong>Copy Kode</strong> di bawah dan paste</span></div>
-          <div class="step-row"><span class="step-circle">③</span><span>Ganti <code class="code-inline">GANTI_DENGAN_SPREADSHEET_ID_KAMU</code> dengan ID spreadsheet kamu <span class="text-xs" style="color:var(--text3)">(lihat di URL spreadsheet: .../d/<strong>ID_INI</strong>/edit)</span></span></div>
-          <div class="step-row"><span class="step-circle">④</span><span>Klik <strong>Deploy → New Deployment → Web App</strong></span></div>
-          <div class="step-row"><span class="step-circle">⑤</span><span>Set <strong>Execute as: Me</strong> dan <strong>Who has access: Anyone</strong> → klik Deploy</span></div>
-          <div class="step-row"><span class="step-circle">⑥</span><span>Copy URL Web App yang muncul → paste di Step 2</span></div>
-        </div>
-        <button id="btnCopyScript" class="btn-secondary w-full md:w-auto">📋 Copy Kode Apps Script</button>
-      </div>
-
-      <!-- Step 2: Connect -->
-      <div class="card">
-        <div class="step-header">
-          <div class="step-num">2</div>
-          <div>
-            <h2 class="text-base font-semibold mb-1">Hubungkan ke SchoolPlanner</h2>
-            <p class="text-sm" style="color:var(--text2)">Paste URL Web App dari Apps Script. Otomatis tersimpan.</p>
-          </div>
-        </div>
-        <div class="form-group mb-4">
-          <label class="form-label">URL Web App (Apps Script)</label>
-          <input type="url" id="scriptUrl" placeholder="https://script.google.com/macros/s/.../exec" class="input-field"/>
-        </div>
-        <div class="flex flex-wrap gap-2">
-          <button id="btnConnectScript" class="btn-primary flex-1 md:flex-none">🔌 Hubungkan</button>
-          <button id="btnPingScript" class="btn-secondary flex-1 md:flex-none" disabled>🏓 Test Koneksi</button>
-          <button id="btnDisconnect" class="btn-danger-outline" disabled>Putuskan</button>
-        </div>
-        <div id="sheetsStatus" class="status-msg mt-3"></div>
-      </div>
-
-      <!-- Step 3: Sync -->
-      <div class="card" id="syncCard" style="opacity:0.4;pointer-events:none">
-        <div class="step-header">
-          <div class="step-num">3</div>
-          <div class="flex-1">
-            <div class="flex items-center justify-between flex-wrap gap-2">
-              <h2 class="text-base font-semibold mb-1">Sinkronisasi Data</h2>
-              <span id="autoRefreshBadge" class="text-xs px-2 py-1 rounded-full" style="background:var(--bg3);color:var(--text3)">Auto-refresh: off</span>
-            </div>
-            <p class="text-sm" style="color:var(--text2)">Tarik data dari spreadsheet atau kirim semua tugas ke spreadsheet.</p>
-          </div>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-          <div class="sync-box">
-            <button id="btnPullTugas" class="btn-primary w-full mb-2">⬇️ Pull dari Sheets</button>
-            <p class="text-xs" style="color:var(--text3)">Ambil tugas dari spreadsheet → tambahkan ke app (skip duplikat berdasarkan ID)</p>
-          </div>
-          <div class="sync-box">
-            <button id="btnPushTugas" class="btn-secondary w-full mb-2">⬆️ Push ke Sheets</button>
-            <p class="text-xs" style="color:var(--text3)">Kirim semua tugas dari app → tulis ke spreadsheet (overwrite)</p>
-          </div>
-        </div>
-        <div id="syncStatus" class="status-msg"></div>
-      </div>
-
-      <!-- Preview -->
-      <div class="card" id="sheetsPreview" style="display:none">
-        <h2 class="text-base font-semibold mb-3">📄 Preview Data dari Sheets</h2>
-        <div id="sheetsPreviewContent"></div>
-        <div class="flex flex-wrap gap-2 mt-4">
-          <button id="btnImportSheets" class="btn-primary flex-1 md:flex-none">✅ Import ke Tugas</button>
-          <button id="btnDownloadTemplate" class="btn-secondary flex-1 md:flex-none">⬇️ Download Template CSV</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== PAGE: SETTINGS ===== -->
-  <div class="page" id="page-settings">
-    <div class="sticky top-10 z-30 page-header-mobile border-b border-border px-4 py-3 md:hidden">
-      <h1 class="text-lg font-bold">⚙️ Pengaturan</h1>
-    </div>
-    <div class="hidden md:block px-8 pt-8 pb-4">
-      <h1 class="text-2xl font-bold">Pengaturan</h1>
-    </div>
-    <div class="px-4 md:px-8 pb-4 space-y-4">
-      <div class="card">
-        <h2 class="text-base font-semibold mb-1">🎨 Mata Pelajaran</h2>
-        <p class="text-sm mb-4" style="color:var(--text2)">Kelola daftar mata pelajaran dan warnanya.</p>
-        <div id="mapelList" class="space-y-2 mb-4"></div>
-        <button id="btnTambahMapelSettings" class="btn-secondary w-full md:w-auto">+ Tambah Mapel Baru</button>
-      </div>
-      <div class="card">
-        <h2 class="text-base font-semibold mb-1">🕐 Jam Sekolah</h2>
-        <p class="text-sm mb-4" style="color:var(--text2)">Atur rentang waktu dan durasi per slot jadwal.</p>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
-          <div class="form-group"><label class="form-label">Jam Mulai</label><input type="time" id="jamMulai" class="input-field"/></div>
-          <div class="form-group"><label class="form-label">Jam Selesai</label><input type="time" id="jamSelesai" class="input-field"/></div>
-          <div class="form-group"><label class="form-label">Durasi Slot (menit)</label><input type="number" id="durasiSlot" min="5" max="240" class="input-field"/></div>
-        </div>
-        <button id="btnSaveJam" class="btn-primary w-full md:w-auto">Simpan Pengaturan</button>
-      </div>
-      <div class="card card-danger">
-        <h2 class="text-base font-semibold mb-1" style="color:var(--danger)">⚠️ Reset Data</h2>
-        <p class="text-sm mb-4" style="color:var(--text2)">Hapus semua data jadwal dan tugas. Tidak bisa dibatalkan.</p>
-        <button id="btnResetData" class="btn-danger w-full md:w-auto">Reset Semua Data</button>
-      </div>
-    </div>
-  </div>
-
-</main>
-
-<!-- ===== MODAL: TAMBAH/EDIT JADWAL ===== -->
-<div class="modal-overlay" id="modalMapel" role="dialog" aria-modal="true" aria-labelledby="modalMapelTitle">
-  <div class="modal">
-    <div class="modal-handle md:hidden"></div>
-    <div class="modal-header">
-      <h2 class="text-base font-semibold" id="modalMapelTitle">Tambah Mapel</h2>
-      <button class="modal-close" id="closeModalMapel" aria-label="Tutup">✕</button>
-    </div>
-    <div class="modal-body space-y-4">
-      <div class="form-group">
-        <label class="form-label" for="mapelSelect">Mata Pelajaran</label>
-        <select id="mapelSelect" class="input-field"></select>
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="hariSelect">Hari</label>
-        <select id="hariSelect" class="input-field">
-          <option value="senin">Senin</option><option value="selasa">Selasa</option>
-          <option value="rabu">Rabu</option><option value="kamis">Kamis</option>
-          <option value="jumat">Jumat</option>
-        </select>
-      </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div class="form-group"><label class="form-label" for="jamMulaiMapel">Jam Mulai</label><input type="time" id="jamMulaiMapel" class="input-field"/></div>
-        <div class="form-group"><label class="form-label" for="jamSelesaiMapel">Jam Selesai</label><input type="time" id="jamSelesaiMapel" class="input-field"/></div>
-      </div>
-      <div class="form-group"><label class="form-label" for="namaGuru">Nama Guru</label><input type="text" id="namaGuru" placeholder="Contoh: Bu Sari" class="input-field"/></div>
-      <div class="form-group"><label class="form-label" for="ruangan">Ruangan (opsional)</label><input type="text" id="ruangan" placeholder="Contoh: Kelas 10A" class="input-field"/></div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-secondary" id="cancelModalMapel">Batal</button>
-      <button class="btn-primary" id="saveModalMapel">Simpan</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===== MODAL: TAMBAH/EDIT TUGAS ===== -->
-<div class="modal-overlay" id="modalTugas" role="dialog" aria-modal="true" aria-labelledby="modalTugasTitle">
-  <div class="modal">
-    <div class="modal-handle md:hidden"></div>
-    <div class="modal-header">
-      <h2 class="text-base font-semibold" id="modalTugasTitle">Tambah Tugas</h2>
-      <button class="modal-close" id="closeModalTugas" aria-label="Tutup">✕</button>
-    </div>
-    <div class="modal-body space-y-4">
-      <div class="form-group"><label class="form-label" for="judulTugas">Judul Tugas</label><input type="text" id="judulTugas" placeholder="Contoh: Latihan Soal Bab 3" class="input-field"/></div>
-      <div class="grid grid-cols-2 gap-3">
-        <div class="form-group"><label class="form-label" for="mapelTugas">Mata Pelajaran</label><select id="mapelTugas" class="input-field"></select></div>
-        <div class="form-group"><label class="form-label" for="tipeTugas">Tipe</label>
-          <select id="tipeTugas" class="input-field">
-            <option value="pr">PR</option><option value="tugas">Tugas Kelas</option>
-            <option value="ulangan">Ulangan/Ujian</option><option value="proyek">Proyek</option>
-          </select>
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div class="form-group"><label class="form-label" for="prioritasTugas">Prioritas</label>
-          <select id="prioritasTugas" class="input-field">
-            <option value="tinggi">🔴 Tinggi</option>
-            <option value="sedang" selected>🟡 Sedang</option>
-            <option value="rendah">🟢 Rendah</option>
-          </select>
-        </div>
-        <div class="form-group"><label class="form-label" for="deadlineTugas">Deadline</label><input type="date" id="deadlineTugas" class="input-field"/></div>
-      </div>
-      <div class="form-group"><label class="form-label" for="guruTugas">Nama Guru</label><input type="text" id="guruTugas" placeholder="Bu Sari" class="input-field"/></div>
-      <div class="form-group"><label class="form-label" for="catatanTugas">Catatan (opsional)</label><textarea id="catatanTugas" placeholder="Tambahkan catatan..." class="input-field" rows="2" style="resize:vertical"></textarea></div>
-      <!-- Subtasks -->
-      <div class="form-group">
-        <div class="flex items-center justify-between mb-2">
-          <label class="form-label mb-0">Subtask (opsional)</label>
-          <button type="button" id="btnAddSubtask" class="btn-add-subtask">+ Tambah</button>
-        </div>
-        <div id="subtaskContainer" class="space-y-2"></div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-secondary" id="cancelModalTugas">Batal</button>
-      <button class="btn-primary" id="saveModalTugas">Simpan</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===== MODAL: TAMBAH MAPEL BARU ===== -->
-<div class="modal-overlay" id="modalMapelBaru" role="dialog" aria-modal="true">
-  <div class="modal modal-sm">
-    <div class="modal-handle md:hidden"></div>
-    <div class="modal-header">
-      <h2 class="text-base font-semibold">Tambah Mata Pelajaran</h2>
-      <button class="modal-close" id="closeModalMapelBaru" aria-label="Tutup">✕</button>
-    </div>
-    <div class="modal-body space-y-4">
-      <div class="form-group"><label class="form-label" for="namaMapelBaru">Nama Mata Pelajaran</label><input type="text" id="namaMapelBaru" placeholder="Contoh: Matematika" class="input-field"/></div>
-      <div class="form-group"><label class="form-label">Warna</label><div id="colorOptions" class="flex flex-wrap gap-2 mt-2"></div></div>
-      <div class="form-group"><label class="form-label" for="ikonMapel">Ikon (emoji)</label><input type="text" id="ikonMapel" placeholder="📐" class="input-field" maxlength="2"/></div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-secondary" id="cancelModalMapelBaru">Batal</button>
-      <button class="btn-primary" id="saveModalMapelBaru">Simpan</button>
-    </div>
-  </div>
-</div>
-
 <!-- Toast -->
 <div id="toast" class="toast-base" role="alert" aria-live="polite"></div>
 
