@@ -994,8 +994,7 @@ function init() {
   document.getElementById('btnPingScript')?.addEventListener('click', pingScript);
   document.getElementById('btnDisconnect')?.addEventListener('click', disconnectScript);
   document.getElementById('btnPullTugas')?.addEventListener('click', ()=>pullFromSheets(false));
-  document.getElementById('btnPushTugas')?.addEventListener('click', pushToSheets);
-  document.getElementById('btnImportSheets')?.addEventListener('click', importFromSheets);
+  document.getElementById('btnPushTugas')?.addEventListener('click', ()=>pushToSheets(false));
   document.getElementById('btnDownloadTemplate')?.addEventListener('click', downloadTemplate);
   document.getElementById('btnCopyScript')?.addEventListener('click', copyScriptCode);
 
@@ -1003,6 +1002,13 @@ function init() {
   if (scriptUrlEl) {
     scriptUrlEl.addEventListener('input', ()=>{ state.sheets.scriptUrl=scriptUrlEl.value.trim(); saveState(); });
     scriptUrlEl.addEventListener('keydown', e=>{ if(e.key==='Enter')connectScript(); });
+    // Auto-connect saat paste URL
+    scriptUrlEl.addEventListener('paste', ()=>{
+      setTimeout(()=>{
+        const val = scriptUrlEl.value.trim();
+        if (val.includes('script.google.com/macros')) connectScript();
+      }, 100);
+    });
   }
 
   // Pomodoro

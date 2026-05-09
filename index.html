@@ -320,37 +320,30 @@
         </div>
         <div id="sheetsStatus" class="status-msg mt-3"></div>
       </div>
-      <!-- Step 3 -->
+      <!-- Step 3: Auto Sync -->
       <div class="card" id="syncCard" style="opacity:0.4;pointer-events:none">
         <div class="step-header">
           <div class="step-num">3</div>
           <div class="flex-1">
             <div class="flex items-center justify-between flex-wrap gap-2">
-              <h2 class="text-base font-semibold mb-1">Sinkronisasi Data</h2>
+              <h2 class="text-base font-semibold mb-1">Auto-Sync Aktif ✅</h2>
               <span id="autoRefreshBadge" class="text-xs px-2 py-1 rounded-full" style="background:var(--bg3);color:var(--text3)">Auto-refresh: off</span>
             </div>
-            <p class="text-sm" style="color:var(--text2)">Tarik data dari spreadsheet atau kirim semua tugas ke spreadsheet.</p>
+            <p class="text-sm" style="color:var(--text2)">Setiap perubahan tugas otomatis tersimpan ke spreadsheet. Tidak perlu push manual.</p>
           </div>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-          <div class="sync-box">
-            <button id="btnPullTugas" class="btn-primary w-full mb-2">⬇️ Pull dari Sheets</button>
-            <p class="text-xs" style="color:var(--text3)">Ambil tugas dari spreadsheet &rarr; tambahkan ke app (skip duplikat)</p>
-          </div>
-          <div class="sync-box">
-            <button id="btnPushTugas" class="btn-secondary w-full mb-2">⬆️ Push ke Sheets</button>
-            <p class="text-xs" style="color:var(--text3)">Kirim semua tugas dari app &rarr; tulis ke spreadsheet (overwrite)</p>
-          </div>
+        <div class="flex flex-wrap gap-2 mb-3">
+          <button id="btnPullTugas" class="btn-primary flex-1">⬇️ Muat dari Sheets</button>
+          <button id="btnPushTugas" class="btn-secondary flex-1">⬆️ Push Sekarang</button>
         </div>
         <div id="syncStatus" class="status-msg"></div>
       </div>
       <!-- Preview -->
       <div class="card" id="sheetsPreview" style="display:none">
-        <h2 class="text-base font-semibold mb-3">📄 Preview Data dari Sheets</h2>
+        <h2 class="text-base font-semibold mb-3">📄 Data di Spreadsheet</h2>
         <div id="sheetsPreviewContent"></div>
-        <div class="flex flex-wrap gap-2 mt-4">
-          <button id="btnImportSheets" class="btn-primary flex-1 md:flex-none">✅ Import ke Tugas</button>
-          <button id="btnDownloadTemplate" class="btn-secondary flex-1 md:flex-none">⬇️ Download Template CSV</button>
+        <div class="flex flex-wrap gap-2 mt-3">
+          <button id="btnDownloadTemplate" class="btn-secondary">⬇️ Download Template CSV</button>
         </div>
       </div>
     </div>
